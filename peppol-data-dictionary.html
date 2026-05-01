@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data Dictionary — Federated Analytics Mesh (FAM)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:           #070c18;
+  --bg-mid:       #0d1424;
+  --bg-card:      #131d30;
+  --bg-elevated:  #1b2640;
+  --border:       #1f2f4a;
+  --border-strong:#2e4470;
+  --text:         #dde4f4;
+  --text-muted:   #7a8caf;
+  --text-dim:     #4a5a7a;
+  --accent:       #39ff84;
+  --accent-2:     #38bdf8;
+  --accent-3:     #fbbf24;
+  --accent-4:     #f472b6;
+  --accent-5:     #a78bfa;
+  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  --display: 'Syne', sans-serif;
+  --body: 'IBM Plex Sans', -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+::selection { background: rgba(57,255,132,.22); color: var(--text); }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ===================== LAYOUT ===================== */
+.page {
+  max-width: none;
+  width: 100%;
+  margin: 0 auto;
+  padding: 48px clamp(24px, 3vw, 56px) 96px;
+}
+
+/* ===================== HEADER ===================== */
+.header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 32px;
+  margin-bottom: 40px;
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--accent);
+}
+h1 {
+  font-family: var(--display);
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  text-wrap: balance;
+}
+h1 .hi { color: var(--accent); }
+.lede {
+  font-size: 17px;
+  color: var(--text-muted);
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+/* ===================== TOOLBAR ===================== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  max-width: 420px;
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  pointer-events: none;
+}
+#search {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+#search:focus { border-color: var(--accent); }
+#search::placeholder { color: var(--text-dim); }
+
+.filter-btns {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  height: 36px;
+  padding: 0 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.14s;
+  white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--border-strong); color: var(--text); }
+.filter-btn:active { transform: scale(0.96); }
+.filter-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filter-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(57,255,132,.06);
+}
+
+.count-tag {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-left: auto;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.count-tag strong { color: var(--accent); }
+
+/* ===================== A–Z ALPHA BAR ===================== */
+.alpha-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 28px;
+  padding: 10px 16px;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.alpha-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alpha-btn:hover { background: var(--bg-card); color: var(--text); }
+.alpha-btn:active { transform: scale(0.9); }
+.alpha-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.alpha-btn.has-entries { color: var(--text-muted); }
+.alpha-btn.active { background: var(--accent); color: var(--bg); font-weight: 700; }
+
+/* ===================== CATEGORY SECTIONS ===================== */
+.category {
+  margin-bottom: 48px;
+}
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.cat-title {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cat-count {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-left: auto;
+  padding: 3px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+/* ===================== ENTRY GRID ===================== */
+.entries {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 16px;
+}
+.entry {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.18);
+}
+.entry:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 6px 16px rgba(0,0,0,.22);
+}
+.entry.highlight {
+  border-color: var(--accent);
+  background: rgba(57,255,132,.04);
+}
+.entry::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  border-radius: 10px 0 0 10px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.entry:hover::before { opacity: 1; }
+
+/* Category colour accents */
+.cat-peppol   .entry::before { background: var(--accent); }
+.cat-pet      .entry::before { background: var(--accent-2); }
+.cat-crypto   .entry::before { background: var(--accent-5); }
+.cat-infra    .entry::before { background: var(--accent-3); }
+.cat-govt     .entry::before { background: var(--accent-4); }
+.cat-finance  .entry::before { background: #34d399; }
+.cat-protocols .entry::before { background: #fb923c; }
+.cat-data     .entry::before { background: #94a3b8; }
+
+.entry-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.entry-term {
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.entry-full {
+  font-size: 15px;
+  color: var(--text-dim);
+  font-style: italic;
+  flex-shrink: 0;
+}
+.entry-tags {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.entry-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tag-peppol   { background: rgba(57,255,132,.12);  color: var(--accent); }
+.tag-pet      { background: rgba(56,189,248,.12);  color: var(--accent-2); }
+.tag-crypto   { background: rgba(167,139,250,.12); color: var(--accent-5); }
+.tag-infra    { background: rgba(251,191,36,.12);  color: var(--accent-3); }
+.tag-govt     { background: rgba(244,114,182,.12); color: var(--accent-4); }
+.tag-finance  { background: rgba(52,211,153,.12);  color: #34d399; }
+.tag-protocols{ background: rgba(251,146,60,.12);  color: #fb923c; }
+.tag-data     { background: rgba(148,163,184,.12); color: #94a3b8; }
+
+.entry-def {
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.entry-context {
+  font-size: 16px;
+  color: var(--text);
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+  line-height: 1.65;
+}
+.entry-context strong { color: var(--text); }
+
+.see-also {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent-2);
+  margin-top: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+}
+.see-also:hover { text-decoration: underline; }
+
+/* ===================== ALPHA SECTION ANCHORS ===================== */
+.alpha-anchor {
+  scroll-margin-top: 80px;
+  display: block;
+  height: 0;
+}
+
+/* ===================== NO RESULTS ===================== */
+.no-results {
+  display: none;
+  text-align: center;
+  padding: 64px 32px;
+  color: var(--text-dim);
+}
+.no-results.show { display: block; }
+.no-results-icon { font-size: 32px; margin-bottom: 12px; }
+.no-results-title { font-size: 16px; color: var(--text-muted); margin-bottom: 6px; }
+.no-results-sub { font-size: 15px; }
+
+/* ===================== STATS BAR ===================== */
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 16px 24px;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 32px;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-num {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 13px; color: var(--text-dim); }
+
+/* ===================== FOOTER ===================== */
+.footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ===================== TERM DETAIL MODAL ===================== */
+.entry { cursor: pointer; }
+.entry:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.term-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 12, 24, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 32px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.term-modal-overlay[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.term-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 760px;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(74,222,128,0.05);
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease;
+}
+.term-modal-overlay[data-open="true"] .term-modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.term-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  z-index: 2;
+}
+.term-modal-close:hover {
+  background: var(--border);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.term-modal-head {
+  padding: 36px 40px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-deep);
+}
+.term-modal-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  background: rgba(57, 255, 132, 0.12);
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.term-modal-term {
+  font-family: var(--mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+.term-modal-full {
+  font-size: 18px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.term-modal-body {
+  padding: 28px 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.modal-section {
+  border-left: 3px solid var(--border-strong);
+  padding: 4px 0 4px 18px;
+}
+.modal-section.def        { border-left-color: var(--text-muted); }
+.modal-section.biz        { border-left-color: var(--accent-2); }
+.modal-section.analogy    { border-left-color: var(--accent-3); }
+.modal-section.relevance  { border-left-color: var(--accent-4); }
+.modal-section.context    { border-left-color: var(--accent); }
+
+.modal-section-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  display: block;
+}
+.modal-section.biz       .modal-section-label { color: var(--accent-2); }
+.modal-section.analogy   .modal-section-label { color: var(--accent-3); }
+.modal-section.relevance .modal-section-label { color: var(--accent-4); }
+.modal-section.context   .modal-section-label { color: var(--accent); }
+
+.modal-section-text {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.modal-section.analogy .modal-section-text {
+  font-style: italic;
+}
+
+.modal-seealso {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.modal-seealso-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+.modal-seealso-link {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--accent-2);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.modal-seealso-link:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: var(--accent-2);
+}
+
+/* Lock body scroll when modal open */
+body.modal-open { overflow: hidden; }
+
+@media (max-width: 600px) {
+  .term-modal-overlay { padding: 16px; }
+  .term-modal-head { padding: 28px 24px 20px; }
+  .term-modal-body { padding: 20px 24px 28px; }
+  .term-modal-term { font-size: 26px; }
+  .modal-section-text { font-size: 17px; }
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  .page { padding: 32px 16px 64px; }
+  .entries { grid-template-columns: 1fr; }
+  h1 { font-size: 28px; }
+  .stats-bar { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="eyebrow">Federated Analytics Mesh (FAM) · Knowledge Base</div>
+    <h1>Data <span class="hi">Dictionary</span></h1>
+    <p class="lede">Definitions for every acronym, term, protocol, standard, and concept used across the three architectural documents. Organised by domain; fully searchable and filterable.</p>
+  </header>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="stat-total">103</div><div class="stat-label">total terms</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">categories</div></div>
+    <div class="stat"><div class="stat-num" id="stat-visible">103</div><div class="stat-label">shown</div></div>
+    <div class="stat"><div class="stat-num">Apr 2026</div><div class="stat-label">last updated</div></div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="6" cy="6" r="4"/><line x1="9.5" y1="9.5" x2="13" y2="13"/>
+      </svg>
+      <input type="text" id="search" placeholder="Search terms, definitions…" autocomplete="off" spellcheck="false" />
+    </div>
+    <div class="filter-btns" id="filter-btns">
+      <button class="filter-btn active" data-cat="all">All</button>
+      <button class="filter-btn" data-cat="peppol">PEPPOL</button>
+      <button class="filter-btn" data-cat="pet">PETs</button>
+      <button class="filter-btn" data-cat="crypto">Cryptography</button>
+      <button class="filter-btn" data-cat="infra">Infrastructure</button>
+      <button class="filter-btn" data-cat="govt">Governance &amp; Regulation</button>
+      <button class="filter-btn" data-cat="finance">Finance</button>
+      <button class="filter-btn" data-cat="protocols">Protocols &amp; Standards</button>
+      <button class="filter-btn" data-cat="data">Data &amp; Architecture</button>
+    </div>
+    <div class="count-tag"><strong id="count-shown">103</strong> terms</div>
+  </div>
+
+  <!-- ALPHA BAR -->
+  <div class="alpha-bar" id="alpha-bar"></div>
+
+  <!-- NO RESULTS -->
+  <div class="no-results" id="no-results">
+    <div class="no-results-icon">⌕</div>
+    <div class="no-results-title">No matching terms</div>
+    <div class="no-results-sub">Try a different search or clear the filter</div>
+  </div>
+
+  <!-- DICTIONARY CONTENT -->
+  <div id="dict-content"></div>
+
+  <footer class="footer">
+    <span>Federated Analytics Mesh (FAM) Data Dictionary · April 2026</span>
+    <span>103 terms · 8 categories · UK English</span>
+  </footer>
+
+</div>
+
+<!-- ===================== TERM DETAIL MODAL ===================== -->
+<div class="term-modal-overlay" id="term-modal" role="dialog" aria-modal="true" aria-labelledby="modal-term" hidden>
+  <div class="term-modal" role="document">
+    <button class="term-modal-close" id="modal-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l10 10M14 4L4 14"/></svg>
+    </button>
+    <div class="term-modal-head">
+      <div class="term-modal-tag" id="modal-tag">CATEGORY</div>
+      <h2 class="term-modal-term" id="modal-term">TERM</h2>
+      <div class="term-modal-full" id="modal-full">Full expansion</div>
+    </div>
+    <div class="term-modal-body" id="modal-body">
+      <!-- Sections injected by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// DICTIONARY DATA — 91 terms across 8 categories
+// =====================================================================
+const CATEGORIES = [
+  {
+    id: 'peppol',
+    icon: '📡',
+    title: 'PEPPOL Network',
+    tagClass: 'tag-peppol',
+  },
+  {
+    id: 'pet',
+    icon: '🔒',
+    title: 'Privacy-Enhancing Technologies',
+    tagClass: 'tag-pet',
+  },
+  {
+    id: 'crypto',
+    icon: '🔐',
+    title: 'Cryptography',
+    tagClass: 'tag-crypto',
+  },
+  {
+    id: 'infra',
+    icon: '🖥️',
+    title: 'Infrastructure & Computing',
+    tagClass: 'tag-infra',
+  },
+  {
+    id: 'govt',
+    icon: '🏛️',
+    title: 'Governance & Regulation',
+    tagClass: 'tag-govt',
+  },
+  {
+    id: 'finance',
+    icon: '💳',
+    title: 'Finance & Trade',
+    tagClass: 'tag-finance',
+  },
+  {
+    id: 'protocols',
+    icon: '📋',
+    title: 'Protocols & Standards',
+    tagClass: 'tag-protocols',
+  },
+  {
+    id: 'data',
+    icon: '🗄️',
+    title: 'Data Architecture & Analytics',
+    tagClass: 'tag-data',
+  },
+];
+
+const TERMS = [
+  // ====== PEPPOL ======
+  {
+    term: 'PEPPOL',
+    full: 'Pan-European Public Procurement On-Line',
+    cat: 'peppol',
+    def: 'An international network and set of standards that enables businesses and government agencies to exchange electronic business documents — principally invoices and orders — across borders. Governed by OpenPeppol, an international non-profit association.',
+    biz: 'The international plumbing for sending structured invoices and orders between businesses and governments. Singapore\'s InvoiceNow programme runs on this same network.',
+    analogy: 'Like the postal system for business documents — standard envelopes, standard addresses, and certified couriers, used in 30+ countries.',
+    relevance: 'This is the existing network on which the entire Federated Analytics Mesh is built — so the mesh works for any business already on InvoiceNow without new onboarding.',
+    context: 'PEPPOL defines the 4-corner model for document exchange and is the underlying transport network for Singapore\'s InvoiceNow programme.',
+    seeAlso: ['OpenPeppol', 'InvoiceNow', 'AS4'],
+  },
+  {
+    term: 'C1',
+    full: 'Corner 1 — Sender / Supplier',
+    cat: 'peppol',
+    def: 'The first corner of the PEPPOL 4-corner model. The originator of a business document (typically the supplier). Submits the structured invoice to its Access Point (C2) for onward delivery.',
+    context: 'In the FAM, C1 is also the primary data owner who holds VCs and initiates financing proofs.',
+    seeAlso: ['C2', 'C4'],
+  },
+  {
+    term: 'C2',
+    full: 'Corner 2 — Sender\'s Access Point',
+    cat: 'peppol',
+    def: 'The IMDA-accredited Access Point used by the sending party. Validates the invoice against PINT-SG schematron rules, signs the message, routes it via AS4 to C3, and simultaneously feeds the ASE analytical layer.',
+    context: 'Under the GST InvoiceNow Requirement, C2 is also responsible for transmitting a copy of the invoice data to IRAS.',
+    seeAlso: ['C3', 'AP', 'ASE'],
+  },
+  {
+    term: 'C3',
+    full: 'Corner 3 — Receiver\'s Access Point',
+    cat: 'peppol',
+    def: 'The IMDA-accredited Access Point used by the receiving party. Validates the incoming AS4 message, returns a Message Level Response, and delivers the invoice to C4.',
+    context: 'C3 may co-locate its own ASE to participate in the FAM on behalf of the buyer.',
+    seeAlso: ['C2', 'C4'],
+  },
+  {
+    term: 'C4',
+    full: 'Corner 4 — Receiver / Buyer',
+    cat: 'peppol',
+    def: 'The fourth corner of the PEPPOL model. The recipient of the business document, typically the buyer. Integrates the invoice into its ERP or accounting system.',
+    context: 'Along with C1, C4 is a primary data owner. It can hold VCs for invoices it has received.',
+    seeAlso: ['C1'],
+  },
+  {
+    term: 'C5 / C5*',
+    full: 'Corner 5 — Analytical Consumer',
+    cat: 'peppol',
+    def: 'The proposed fifth corner of the extended PEPPOL model. Not a document exchange participant but an analytical consumer — a bank, auditor, regulator, or data owner — that queries the mesh via the Query Broker.',
+    biz: 'Anyone who needs answers from the network without sending or receiving invoices themselves — a bank deciding on financing, IRAS spotting GST anomalies, an auditor verifying a trail.',
+    analogy: 'Like a researcher visiting a library reading-room — they ask focused questions and read the answers, but they never take the books home.',
+    relevance: 'This is the new role the FAM creates: a way for Singapore\'s banks, regulators and statisticians to consume PEPPOL data without ever touching the underlying invoices.',
+    context: 'C5* is used in this blueprint to denote the consumer role. Examples: DBS for invoice financing (Use Case A), IRAS for GST audit (Use Case B).',
+    seeAlso: ['ASE', 'QB'],
+  },
+  {
+    term: 'AP',
+    full: 'Access Point',
+    cat: 'peppol',
+    def: 'A certified technical service provider that connects businesses to the PEPPOL network. Responsible for sending and receiving PEPPOL-formatted business documents on behalf of its customers. Must be accredited by the relevant PEPPOL Authority (IMDA in Singapore).',
+    biz: 'Your business\'s connection point to the PEPPOL network — typically operated by an accounting software provider or payments specialist. Your invoices flow through your AP to your customer\'s AP.',
+    analogy: 'Like a licensed customs broker — certified, audited, and the only gateway your shipments take to enter or leave the network.',
+    relevance: 'In the mesh, every ASE sits next to an AP, riding the same accreditation that makes the AP trustworthy.',
+    context: 'Each AP in the mesh optionally co-locates an ASE to participate in the analytical layer.',
+    seeAlso: ['IMDA', 'ASE', 'SMP'],
+  },
+  {
+    term: 'SMP',
+    full: 'Service Metadata Publisher',
+    cat: 'peppol',
+    def: 'A decentralised registry that stores metadata about PEPPOL participants — which document types they can receive and via which endpoint. Discovered through the SML. Each AP operates one SMP per participant.',
+    context: 'The Analytical Service Registry (ASR) is proposed as a sibling extension to the SMP, listing analytical capabilities alongside billing capabilities.',
+    seeAlso: ['SML', 'ASR'],
+  },
+  {
+    term: 'SML',
+    full: 'Service Metadata Locator',
+    cat: 'peppol',
+    def: 'A single global DNS-based registry that points to the correct SMP for a given PEPPOL participant. The root of PEPPOL\'s decentralised discovery infrastructure.',
+    context: 'The ASR reuses the same SML DNS root, adding new _analytics._tcp SRV records for analytical capabilities.',
+    seeAlso: ['SMP', 'ASR'],
+  },
+  {
+    term: 'ASR',
+    full: 'Analytical Service Registry',
+    cat: 'peppol',
+    def: 'Proposed extension to the SMP that enumerates the analytical capabilities each AP\'s ASE supports. Capability identifiers follow the URN scheme urn:peppol:analytics:<capability>:<version>. Governed by the proposed OpenPeppol Analytical Services Profile.',
+    context: 'Consumers discover analytical services via the ASR exactly as they discover billing endpoints via the SMP — using the same SML DNS root.',
+    seeAlso: ['SMP', 'SML', 'ASE', 'URN'],
+  },
+  {
+    term: 'ASE',
+    full: 'Analytical Service Endpoint',
+    cat: 'peppol',
+    def: 'A logically distinct module co-located with each PEPPOL Access Point. Holds only derivative cryptographic material about invoices — hashes, commitments, attestations, model parameters — never invoice payloads. Exposes capabilities (VC issuance, ZKP, FL, PSI, TEE, MPC) discoverable via the ASR.',
+    biz: 'A small analytical helper installed alongside each Access Point. It produces signed summaries — proofs and attestations about the invoices flowing through — but never holds the invoices themselves. If an ASE is compromised, no invoice data leaks.',
+    analogy: 'Like a notary stationed at a postbox — they certify what was posted but don\'t keep copies of the letters.',
+    relevance: 'This is the unit that produces every privacy-preserving artefact in the mesh: the VC for Acme, the range proof for DBS, the noised aggregate for IRAS.',
+    context: 'The ASE is the atomic unit of the Federated Analytics Mesh (FAM). Operated by the same legal entity as the AP, under a new IMDA Analytical Services Annex accreditation.',
+    seeAlso: ['AP', 'ASR', 'VCIS', 'TEE'],
+  },
+  {
+    term: 'PINT-SG',
+    full: 'PEPPOL International Billing Specification — Singapore',
+    cat: 'peppol',
+    def: 'The Singapore-specific specialisation of the PEPPOL International (PINT) billing specification. Defines the UBL 2.1-based invoice structure required for InvoiceNow. Replaced the earlier SG Peppol BIS Billing 3.0.',
+    context: 'All invoices transmitted via InvoiceNow must conform to PINT-SG. IRAS\'s GST InvoiceNow Requirement mandates PINT-SG-formatted transmission.',
+    seeAlso: ['UBL', 'InvoiceNow', 'IRAS'],
+  },
+  {
+    term: 'InvoiceNow',
+    full: 'Singapore\'s national e-invoicing network',
+    cat: 'peppol',
+    def: 'Singapore\'s nationwide e-invoicing initiative operated by IMDA. Built on the PEPPOL network. Over 63,000 businesses onboarded as of April 2026. Operates on the "email-like" principle that sent invoices cannot be centrally retrieved — the network routes but does not store.',
+    context: 'The GST InvoiceNow Requirement mandates phased adoption for all GST-registered businesses between 2025 and 2031.',
+    seeAlso: ['IMDA', 'PEPPOL', 'PINT-SG'],
+  },
+  {
+    term: 'OpenPeppol',
+    full: 'OpenPeppol AISBL',
+    cat: 'peppol',
+    def: 'The international non-profit association that governs the PEPPOL network. Maintains the Peppol Interoperability Framework (PIF), accreditation rules, and document specifications. Headquartered in Brussels.',
+    context: 'This blueprint proposes a new Analytical Services Coordinating Community under OpenPeppol to govern the ASR URN catalogue.',
+    seeAlso: ['PIF', 'PEPPOL'],
+  },
+  {
+    term: 'PIF',
+    full: 'Peppol Interoperability Framework',
+    cat: 'peppol',
+    def: 'The overarching governance and technical framework published by OpenPeppol that defines how participants must implement the network — covering accreditation, security, document profiles, and transport.',
+    seeAlso: ['OpenPeppol'],
+  },
+  {
+    term: 'IRSP',
+    full: 'InvoiceNow-Ready Solution Provider',
+    cat: 'peppol',
+    def: 'A software solution certified by IMDA that enables businesses to generate, transmit and receive PEPPOL-formatted invoices. Used interchangeably with accounting software, ERP plugins, and cloud billing platforms that have passed IMDA\'s IRSP accreditation process.',
+    seeAlso: ['InvoiceNow', 'IMDA'],
+  },
+  {
+    term: 'AS4',
+    full: 'OASIS Applicability Statement 4',
+    cat: 'peppol',
+    def: 'The messaging protocol used for secure, reliable document exchange between PEPPOL Access Points. Provides message-level signing, encryption, acknowledgement (AS4 receipts), and duplicate detection over HTTPS.',
+    context: 'The FAM explicitly does not alter or extend the AS4 document path. All analytical flows operate in a parallel overlay.',
+    seeAlso: ['C2', 'C3'],
+  },
+  {
+    term: 'UBL',
+    full: 'Universal Business Language (ISO/IEC 19845)',
+    cat: 'protocols',
+    def: 'An XML-based standard for electronic business documents including invoices, purchase orders and credit notes. PEPPOL\'s PINT billing specifications are defined as UBL 2.1 document profiles.',
+    seeAlso: ['PINT-SG'],
+  },
+
+  // ====== PETs ======
+  {
+    term: 'PET',
+    full: 'Privacy-Enhancing Technology',
+    cat: 'pet',
+    def: 'A broad class of technologies that enable data to be used for analytical, statistical, or machine-learning purposes while preserving the privacy of the individuals or organisations whose data is processed. Includes ZKPs, MPC, FHE, FL, DP, TEEs, PSI, and synthetic data methods.',
+    context: 'The FAM blueprint evaluates 10 PETs and 4 pragmatic alternatives in parallel — not as a fallback chain.',
+    seeAlso: ['ZKP', 'MPC', 'FHE', 'FL', 'DP', 'TEE', 'PSI'],
+  },
+  {
+    term: 'ZKP',
+    full: 'Zero-Knowledge Proof',
+    cat: 'pet',
+    def: 'A cryptographic protocol in which a prover convinces a verifier that a statement is true without revealing any information beyond the truth of the statement. Guarantees: completeness (honest prover succeeds), soundness (cheating prover fails with probability ≤ 2⁻λ), and zero-knowledge (verifier learns nothing beyond the statement).',
+    biz: 'A way to prove something is true without showing the underlying evidence. A supplier can prove its receivables exceed S$200,000 without revealing a single invoice line, buyer or amount.',
+    analogy: 'Like proving you are over 21 without showing your date of birth — the bouncer gets the answer they need, you keep the rest of your ID private.',
+    relevance: 'This is the core trick that lets banks underwrite financing without ever seeing the supplier\'s actual books.',
+    context: 'Used in the mesh for range proofs on receivables (Bulletproofs), GST-correctness attestations (zk-SNARKs), and accumulator-based duplicate-invoice proofs.',
+    seeAlso: ['zk-SNARK', 'zk-STARK', 'Bulletproof'],
+  },
+  {
+    term: 'MPC',
+    full: 'Secure Multi-Party Computation',
+    cat: 'pet',
+    def: 'A cryptographic technique allowing multiple parties to jointly compute a function over their private inputs without revealing those inputs to each other or to any trusted third party. Guarantees are parameterised by a threshold of honest parties.',
+    biz: 'A way for several organisations to compute a joint answer — like total exposure to a sector — without any of them sharing their raw numbers. Each contributes a scrambled share; only the final answer is unscrambled.',
+    analogy: 'Like a salary survey where everyone whispers their pay to the next person plus a random number — the final tally is correct, but no individual figure is ever exposed.',
+    relevance: 'This is how banks can answer "are we collectively over-exposed to this sector?" without telling each other their individual loan books.',
+    context: 'Used in the mesh for cross-bank aggregate exposure queries and as a fallback for joint computation where TEE hardware trust is unavailable.',
+    seeAlso: ['SPDZ', 'PSI'],
+  },
+  {
+    term: 'FHE',
+    full: 'Fully Homomorphic Encryption',
+    cat: 'pet',
+    def: 'An encryption scheme that allows arbitrary computations to be performed on ciphertexts, producing an encrypted result that, when decrypted, matches the result of operations performed on the plaintexts. Enables computation without decryption.',
+    biz: 'Sealed-envelope maths. You can lock your data in a cryptographic envelope, send it for processing, and the analyst can compute over it without ever opening the envelope. The result comes back still sealed, only readable by you.',
+    analogy: 'Like a locked glove-box that lets a technician work on the contents through built-in gloves — they finish the job, but the box is never opened.',
+    relevance: 'Used for offline batch analytics like sectoral benchmarks where the trade-off in compute time is acceptable for the privacy guarantee.',
+    context: 'TRL 6–7 for finance use cases. Performance overhead (10³–10⁵×) limits real-time applicability but is suitable for offline batch analytics such as encrypted sectoral benchmarks (Use Case C).',
+    seeAlso: ['SHE', 'TEE'],
+  },
+  {
+    term: 'SHE',
+    full: 'Somewhat Homomorphic Encryption',
+    cat: 'pet',
+    def: 'A restricted form of FHE that supports a limited number of operations (typically additions and a small number of multiplications) on ciphertexts. More performant than full FHE and sufficient for many aggregation tasks.',
+    seeAlso: ['FHE'],
+  },
+  {
+    term: 'FL',
+    full: 'Federated Learning',
+    cat: 'pet',
+    def: 'A machine-learning paradigm in which a model is trained across multiple decentralised data holders (clients) without moving the training data to a central location. Each client trains locally and shares only model gradients (not data) with an aggregator.',
+    biz: 'A way to train a shared AI model — for fraud or credit risk — across many banks, where each bank trains on its own data and only sends back lessons learned. The data itself never leaves the bank\'s premises.',
+    analogy: 'Like a teaching circle where each teacher reports what worked in their classroom — the pooled wisdom improves everyone, but no student record ever changes hands.',
+    relevance: 'This is how Singapore banks can collectively build a stronger fraud model than any one of them could on their own, without sharing customer data.',
+    context: 'Used in the mesh for training fraud-detection and credit-risk models across bank ASEs. Precedent: J.P. Morgan / NVIDIA Project AIKYA (2025).',
+    seeAlso: ['DP', 'FLARE'],
+  },
+  {
+    term: 'DP',
+    full: 'Differential Privacy',
+    cat: 'pet',
+    def: 'A mathematical privacy guarantee ensuring that the inclusion or exclusion of any single record changes the output distribution of an algorithm by at most a multiplicative e^ε factor (with additive slack δ). Expressed as (ε, δ)-DP. Smaller ε = stronger privacy.',
+    biz: 'A formal promise that no individual business\'s data can be reverse-engineered from a published statistic. Carefully calibrated noise is added to results so the answer is still useful, but no single company stands out.',
+    analogy: 'Like blurring faces in a published crowd photo — you can still tell how many people were there, but you cannot pick out any individual.',
+    relevance: 'This is how IRAS can publish sectoral GST trends without anyone being able to deduce any one supplier\'s figures.',
+    context: 'Used in the mesh for publishing sectoral aggregates to IRAS (Use Case B) with ε = 1.0, and for noising FL gradient updates at ε ≤ 8. Privacy budget is consumed by each query; finite annual budgets must be tracked.',
+    seeAlso: ['FL', 'Laplace'],
+  },
+  {
+    term: 'PSI',
+    full: 'Private Set Intersection',
+    cat: 'pet',
+    def: 'A cryptographic protocol allowing two or more parties to determine the intersection of their private sets — or only the cardinality or aggregate functions over the intersection — without revealing non-intersecting elements.',
+    biz: 'A way for two parties to find out what they have in common, without either of them showing their full list. Banks can detect that the same invoice has been pledged twice without revealing any other invoices on their books.',
+    analogy: 'Like comparing wedding guest lists by whispering names through a sound-deadening pipe — you only hear back the matching names, never the rest.',
+    relevance: 'This is how the duplicate-finance check across DBS, OCBC and UOB works in Use Case A — none of them learns the others\' invoice portfolios.',
+    context: 'Used for cross-bank duplicate-finance detection: determines whether an invoice has already been pledged at another bank without revealing any bank\'s full pledged-invoice set. Implemented using KKRT-PSI with OPRF.',
+    seeAlso: ['OPRF', 'KKRT', 'MPC', 'Bloom Filter'],
+  },
+  {
+    term: 'VCIS',
+    full: 'Verifiable Credential Issuer Service',
+    cat: 'pet',
+    def: 'A function of each ASE that issues signed, attribute-selective credentials over invoice properties to data owners (C1 or C4). Credentials are holder-bound and revocable. Anchors to the IMDA AP accreditation root via a DID:web or X.509 chain.',
+    context: 'VCIS issues SD-JWT-VCs by default; BBS+ credentials for unlinkable presentations. Revocation managed via the OAuth 2.0 status list (draft-ietf-oauth-status-list).',
+    seeAlso: ['VC', 'SD-JWT', 'BBS+'],
+  },
+
+  // ====== CRYPTOGRAPHY ======
+  {
+    term: 'VC',
+    full: 'Verifiable Credential',
+    cat: 'crypto',
+    def: 'A tamper-evident, cryptographically verifiable digital credential conforming to the W3C Verifiable Credentials Data Model (VCDM). Issued by an issuer, held by a holder, and verifiable by any verifier using the issuer\'s public key — without contacting the issuer.',
+    biz: 'A digital, tamper-proof attestation of a fact about your business — for example, that you have S$200K in receivables. Anyone you show it to can verify it instantly without phoning the issuer.',
+    analogy: 'Like a notarised letter you can email — the recipient can confirm the notary\'s seal is genuine without ever calling the notary\'s office.',
+    relevance: 'This is the core unit of trust in the mesh: every claim Acme makes to DBS is backed by a VC issued by an independent, accredited ASE.',
+    context: 'In the mesh, VCs represent invoice attribute attestations issued by ASE-co-located VCIS services to supplier and buyer data owners.',
+    seeAlso: ['VCIS', 'SD-JWT', 'BBS+', 'VCDM', 'VP'],
+  },
+  {
+    term: 'VCDM',
+    full: 'W3C Verifiable Credentials Data Model',
+    cat: 'crypto',
+    def: 'The W3C specification (version 2.0, current as of 2024) defining the data model for Verifiable Credentials and Verifiable Presentations. Supports multiple proof formats including JSON-LD proofs, SD-JWT, and JWP.',
+    seeAlso: ['VC', 'SD-JWT'],
+  },
+  {
+    term: 'SD-JWT',
+    full: 'Selective Disclosure for JSON Web Tokens (IETF)',
+    cat: 'crypto',
+    def: 'An IETF standard (draft-ietf-oauth-sd-jwt-vc) enabling selective disclosure of individual claims within a JWT. Each claim is individually salted and hashed; the holder reveals only the claims required for a given presentation, withholding others.',
+    biz: 'A credential format where each fact is individually sealed. When you present, you can choose which facts to unseal and which to keep hidden — without breaking the issuer\'s signature.',
+    analogy: 'Like a shopping list where every item is on a separate scratch-off panel — you reveal only the items the recipient asked about and leave the rest covered.',
+    relevance: 'This is what lets Acme show DBS only the totals from an invoice credential, without disclosing line items, buyer or commercial terms.',
+    context: 'Default VC format in the mesh. A supplier presenting to a bank might reveal only total_sgd and due_date from a credential that also contains line items, buyer identity, and payment terms.',
+    seeAlso: ['VC', 'BBS+', 'JWT'],
+  },
+  {
+    term: 'JWT',
+    full: 'JSON Web Token (RFC 7519)',
+    cat: 'crypto',
+    def: 'A compact, URL-safe means of representing claims to be transferred between two parties. Consists of a header, payload, and signature, each Base64URL-encoded. The bearer token format underlying OAuth 2.0 and the SD-JWT-VC specification.',
+    seeAlso: ['SD-JWT', 'GNAP'],
+  },
+  {
+    term: 'BBS+',
+    full: 'BBS+ Pairing-Based Signature Scheme',
+    cat: 'crypto',
+    def: 'A multi-message digital signature scheme based on pairing-friendly elliptic curves (BLS12-381). Enables unlinkable selective-disclosure presentations: the verifier cannot correlate two presentations from the same credential, preventing tracking.',
+    biz: 'A credential format that lets you present the same underlying credential to several different verifiers without any of them being able to figure out it was the same credential each time. Each presentation looks fresh.',
+    analogy: 'Like a stage costume that lets the same actor appear in different roles — each audience sees a distinct character, even though it\'s one person.',
+    relevance: 'This is what stops three different lenders from privately comparing notes and concluding they were all approached by the same supplier.',
+    context: 'Used in the mesh as an alternative to SD-JWT where unlinkability is required — for example, where a supplier presents to multiple lenders and does not wish to be identified as the same supplier.',
+    seeAlso: ['SD-JWT', 'VC'],
+  },
+  {
+    term: 'DID',
+    full: 'Decentralised Identifier (W3C)',
+    cat: 'crypto',
+    def: 'A type of globally unique identifier that does not require a centralised registration authority. Resolved to a DID Document containing public keys and service endpoints. DID:web anchors identifiers to HTTPS domains; DID:peppol anchors to PEPPOL participant IDs.',
+    context: 'ASE operators publish DID:web identifiers for their VCIS services; PEPPOL participant identities are expressed as DID:peppol URIs in VCs.',
+    seeAlso: ['VC', 'VCIS'],
+  },
+  {
+    term: 'ZKP — zk-SNARK',
+    full: 'Zero-Knowledge Succinct Non-Interactive Argument of Knowledge',
+    cat: 'crypto',
+    def: 'A ZKP variant producing very small proofs (~200 bytes) that verify in microseconds. Requires a one-time trusted setup ceremony per circuit (a limitation). Based on pairing-based cryptography — not post-quantum secure.',
+    context: 'Suitable for GST-correctness attestations where proof size and verification speed matter. Not post-quantum; migration to STARKs recommended under the MAS PQC initiative.',
+    seeAlso: ['ZKP', 'zk-STARK'],
+  },
+  {
+    term: 'ZKP — zk-STARK',
+    full: 'Zero-Knowledge Scalable Transparent Argument of Knowledge',
+    cat: 'crypto',
+    def: 'A ZKP variant with a transparent setup (no trusted ceremony), post-quantum security (collision-resistant hashes only), and fast prover times. Proof size is larger (~100 KB) than zk-SNARKs.',
+    context: 'Recommended for high-assurance, long-lived attestations and for post-quantum migration. Used in production at StarkNet.',
+    seeAlso: ['ZKP', 'zk-SNARK'],
+  },
+  {
+    term: 'Bulletproof',
+    full: 'Bulletproofs — Non-interactive ZKP for Range Proofs',
+    cat: 'crypto',
+    def: 'A ZKP scheme that proves a committed value lies within a range [0, 2^n) without revealing the value. Transparent setup (no trusted ceremony). Logarithmic proof size. Used in the mesh to prove aggregate receivables exceed a financing threshold.',
+    context: 'Proving Σ(unpaid totals) > 200,000 SGD over Pedersen commitments. Prover time ~700 ms for 47 invoices; verification < 50 ms.',
+    seeAlso: ['ZKP', 'Pedersen'],
+  },
+  {
+    term: 'Pedersen Commitment',
+    full: 'Pedersen Commitment Scheme',
+    cat: 'crypto',
+    def: 'A cryptographic commitment scheme C = g^x · h^r (mod p) where x is the secret value and r is a random blinding factor. Computationally binding (cannot change the committed value) and perfectly hiding (reveals nothing about x). Additively homomorphic: commits to sums.',
+    context: 'Used to commit to invoice values at ASE issuance time, enabling Bulletproof range proofs over aggregate receivables without revealing individual invoice amounts.',
+    seeAlso: ['Bulletproof', 'ZKP'],
+  },
+  {
+    term: 'OPRF',
+    full: 'Oblivious Pseudo-Random Function',
+    cat: 'crypto',
+    def: 'A two-party cryptographic protocol where a client evaluates a PRF on its private input, using the server\'s private key, without the server learning the client\'s input and the client learning the server\'s key.',
+    context: 'Core building block of KKRT-PSI. Each bank\'s ASE evaluates OPRF on its pledged-invoice hashes; the client learns only the intersection, not the full server set.',
+    seeAlso: ['PSI', 'KKRT'],
+  },
+  {
+    term: 'KKRT',
+    full: 'Kolesnikov–Kumaresan–Rosulek–Trieu PSI Protocol (2016)',
+    cat: 'crypto',
+    def: 'A highly efficient private set intersection protocol based on OT extension and OPRF. Supports multi-party cardinality-only variants suitable for the cross-bank duplicate-finance check use case.',
+    context: 'Selected for the mesh\'s duplicate-finance PSI because it scales to cohorts of 12+ banks with round-trip counts bounded at 6.',
+    seeAlso: ['PSI', 'OPRF'],
+  },
+  {
+    term: 'SPDZ',
+    full: 'SPDZ — MPC Protocol (Damgård et al.)',
+    cat: 'crypto',
+    def: 'A secure multi-party computation protocol providing active (malicious-adversary) security. Uses preprocessed Beaver triples and information-theoretic MACs to guarantee honest output even if up to t-1 of n parties are corrupted. The basis of many commercial MPC deployments.',
+    context: 'Cited as the MPC protocol for cross-bank aggregate exposure computation. Danish banks have run SPDZ-based agricultural benchmarking in production since 2016.',
+    seeAlso: ['MPC'],
+  },
+  {
+    term: 'ECDSA',
+    full: 'Elliptic Curve Digital Signature Algorithm',
+    cat: 'crypto',
+    def: 'A public-key signature scheme based on elliptic curve groups. Widely used for signing PEPPOL AS4 messages, JWT/VC signatures, and TLS certificates. Vulnerable to cryptanalytically relevant quantum computers — migration to post-quantum schemes required.',
+    seeAlso: ['PQC', 'RA-TLS'],
+  },
+  {
+    term: 'PQC',
+    full: 'Post-Quantum Cryptography',
+    cat: 'crypto',
+    def: 'Cryptographic algorithms designed to be secure against attacks by quantum computers. NIST standardised the first PQC algorithms in 2024 (ML-KEM, ML-DSA, SLH-DSA). Relevant to the mesh because ZKP schemes based on pairings (zk-SNARKs) are not post-quantum secure.',
+    context: 'MAS and Banque de France conducted a joint post-quantum cryptography resilience experiment. The blueprint recommends hybrid PQC migration (Dilithium + ECDSA) aligned to this initiative.',
+    seeAlso: ['ECDSA', 'zk-STARK'],
+  },
+
+  // ====== INFRASTRUCTURE ======
+  {
+    term: 'TEE',
+    full: 'Trusted Execution Environment',
+    cat: 'infra',
+    def: 'A hardware-isolated secure enclave within a processor that guarantees confidentiality and integrity of code and data even from the host OS, hypervisor, or cloud provider. Verifiable via remote attestation.',
+    biz: 'A locked room inside a computer chip where sensitive code can run untouched — even the computer\'s own administrator cannot peek inside. Anyone can ask the chip to prove which code is running in there.',
+    analogy: 'Like a tamper-evident voting booth installed inside a building — the building\'s landlord cannot see inside, and you can verify the booth has not been tampered with before stepping in.',
+    relevance: 'This is what gives banks the confidence that an ASE running on AWS or Azure is not quietly leaking their query inputs to the cloud provider.',
+    context: 'ASEs run analytical workloads inside TEEs (Intel TDX, AMD SEV-SNP, AWS Nitro). Remote attestation lets data owners verify the exact code processing their data.',
+    seeAlso: ['Intel TDX', 'AWS Nitro', 'RA-TLS'],
+  },
+  {
+    term: 'Intel TDX',
+    full: 'Intel Trust Domain Extensions',
+    cat: 'infra',
+    def: 'Intel\'s virtualisation-based TEE technology that provides hardware-isolated Trust Domains (TDs) at the VM level. Successor to SGX, supporting larger memory enclaves and cloud-native deployment.',
+    context: 'The default TEE target for ASE deployment in the mesh architecture, cited as "Intel TDX · code_hash 0x…" in attestation certificates.',
+    seeAlso: ['TEE', 'AMD SEV-SNP'],
+  },
+  {
+    term: 'AMD SEV-SNP',
+    full: 'AMD Secure Encrypted Virtualisation — Secure Nested Paging',
+    cat: 'infra',
+    def: 'AMD\'s TEE technology providing VM-level memory encryption and integrity protection via hardware-enforced nested page table controls. Offers different side-channel exposure than Intel TDX.',
+    context: 'Cited as an alternative TEE for ASE deployment, providing defence-in-depth diversity against single-vendor side-channel risks.',
+    seeAlso: ['TEE', 'Intel TDX'],
+  },
+  {
+    term: 'AWS Nitro',
+    full: 'AWS Nitro Enclaves',
+    cat: 'infra',
+    def: 'Amazon Web Services\' confidential-computing service that creates isolated EC2 micro-VMs with no persistent storage, no interactive access, and remote attestation via a cryptographically signed attestation document.',
+    context: 'Used by MonetaGo\'s ABS Trade Finance Registry — a direct Singapore precedent for enclave-based duplicate-finance detection.',
+    seeAlso: ['TEE', 'MonetaGo'],
+  },
+  {
+    term: 'RA-TLS',
+    full: 'Remote Attestation TLS',
+    cat: 'infra',
+    def: 'A TLS variant that embeds TEE attestation evidence into the TLS certificate or handshake, allowing a remote party to simultaneously establish a secure channel and verify that it is talking to a specific attested enclave.',
+    context: 'Used for ASE-to-Broker communications in the mesh, ensuring the broker only accepts results from properly attested ASE enclaves.',
+    seeAlso: ['TEE', 'RATS'],
+  },
+  {
+    term: 'RATS',
+    full: 'IETF Remote ATtestation procedureS (RFC 9334)',
+    cat: 'infra',
+    def: 'The IETF framework defining the architecture, roles, and conceptual messages for remote attestation of hardware-rooted trust. Defines Attester, Verifier, and Relying Party roles.',
+    context: 'The attestation architecture underpinning RA-TLS and TEE attestation document verification in the mesh.',
+    seeAlso: ['RA-TLS', 'TEE'],
+  },
+  {
+    term: 'DLT',
+    full: 'Distributed Ledger Technology',
+    cat: 'infra',
+    def: 'A consensus-based, append-only database replicated across multiple nodes with no single point of control. Blockchains are a subset of DLT. Used in the mesh exclusively for anchoring Merkle root hashes from the transparency log — not for storing invoices.',
+    context: 'Chain-agnostic in the blueprint: XDC, Polygon, Ethereum and Hyperledger Besu are all referenced. Hourly Signed Tree Heads are anchored to provide global tamper-evidence.',
+    seeAlso: ['XDC', 'Polygon', 'TLog'],
+  },
+  {
+    term: 'XDC',
+    full: 'XDC Network',
+    cat: 'infra',
+    def: 'An enterprise-grade EVM-compatible blockchain designed for trade finance and cross-border payment applications. ISO 20022 compliant. Used as a DLT anchoring option in the mesh architecture.',
+    context: 'XDC is relevant to the Singapore trade finance context given its adoption by SGTraDex and TradeFinex. Listed alongside Polygon and Ethereum as chain-agnostic anchoring options.',
+    seeAlso: ['DLT', 'Polygon'],
+  },
+  {
+    term: 'Polygon',
+    full: 'Polygon (formerly Matic Network)',
+    cat: 'infra',
+    def: 'An EVM-compatible Layer-2 / sidechain network providing lower-cost transactions relative to Ethereum mainnet. Used in the mesh as a DLT anchoring option for transparency-log Signed Tree Heads.',
+    seeAlso: ['DLT', 'XDC'],
+  },
+  {
+    term: 'FLARE',
+    full: 'NVIDIA FLARE (Federated Learning Application Runtime Environment)',
+    cat: 'infra',
+    def: 'An open-source federated learning framework developed by NVIDIA for production FL deployments. Supports differential privacy, secure aggregation, vertical and horizontal FL, and heterogeneous infrastructure.',
+    context: 'Referenced as the FL runtime in J.P. Morgan / BNY / RBC / NVIDIA\'s Project AIKYA fraud-detection deployment — the direct production precedent for the mesh\'s FL layer.',
+    seeAlso: ['FL', 'AIKYA'],
+  },
+  {
+    term: 'ERP',
+    full: 'Enterprise Resource Planning',
+    cat: 'infra',
+    def: 'Integrated business management software covering finance, supply chain, HR and operations. The system at C1 (supplier) and C4 (buyer) that generates and receives invoices within the PEPPOL workflow.',
+    seeAlso: ['C1', 'C4', 'IRSP'],
+  },
+  {
+    term: 'EVM',
+    full: 'Ethereum Virtual Machine',
+    cat: 'infra',
+    def: 'The sandboxed runtime for executing smart contracts on Ethereum and EVM-compatible chains (Polygon, XDC, Besu). Relevant to the mesh\'s DLT anchoring layer where smart contracts optionally manage Signed Tree Head registration.',
+    seeAlso: ['DLT', 'XDC', 'Polygon'],
+  },
+
+  // ====== GOVERNANCE & REGULATION ======
+  {
+    term: 'IMDA',
+    full: 'Infocomm Media Development Authority',
+    cat: 'govt',
+    def: 'Singapore\'s statutory board for the infocomm media sector. Acts as the Singapore PEPPOL Authority since May 2018. Responsible for accrediting Access Points and InvoiceNow-Ready Solution Providers, and for maintaining the Singapore PEPPOL governance framework.',
+    context: 'IMDA\'s accreditation regime is the governance mechanism proposed for ASE operators under a new Analytical Services Annex.',
+    seeAlso: ['InvoiceNow', 'PEPPOL', 'AP'],
+  },
+  {
+    term: 'IRAS',
+    full: 'Inland Revenue Authority of Singapore',
+    cat: 'govt',
+    def: 'The Singapore tax authority responsible for administering GST, income tax, and other taxes. Under the GST InvoiceNow Requirement, IRAS receives a copy of every in-scope PEPPOL invoice — effectively operating as the existing GST reporting node in the network today.',
+    context: 'IRAS\'s statutory submission is outside FAM scope. IRAS receives PEPPOL invoice data directly via the GST InvoiceNow Requirement — a regulatory obligation that predates and operates independently of FAM\'s consent-based analytics model. FAM serves analytical consumers who query with data-owner consent; IRAS\'s access is governed by the GST Act, not by Consent Manifests.',
+    seeAlso: ['GST', 'InvoiceNow', 'PINT-SG', 'Consent Manifest'],
+  },
+  {
+    term: 'MAS',
+    full: 'Monetary Authority of Singapore',
+    cat: 'govt',
+    def: 'Singapore\'s central bank and integrated financial regulator. Oversees commercial banks, insurers, capital markets, and payment systems. Relevant to the mesh through Project Guardian (asset tokenisation), Project Moonshot (post-quantum cryptography), and the COSMIC AML platform.',
+    context: 'MAS\'s regulatory framework (Notice 626, Financial Services and Markets Act 2022) provides the template for the mesh\'s bank-use-case governance. MAS Supervision is the C5* consumer in Use Case B — receiving a federated cross-bank SME sector-exposure model via FL + DP, without any individual bank\'s counterparty list ever leaving its ASE. [TODO: confirm MAS API integration pattern for statutory analytical access].',
+    seeAlso: ['COSMIC', 'KYB', 'AML', 'Federated Learning', 'Differential Privacy'],
+  },
+  {
+    term: 'PDPA',
+    full: 'Personal Data Protection Act (Singapore, 2012)',
+    cat: 'govt',
+    def: 'Singapore\'s primary personal data protection legislation administered by the PDPC. Governs the collection, use, disclosure, and care of personal data. Applies to supplier and buyer personal data embedded in invoices.',
+    context: 'Key constraint for ASE operators: the Trusted Data Sharing Framework (PDPC) governs how ASEs handle personal data in VCs and aggregates.',
+    seeAlso: ['PDPC', 'GDPR'],
+  },
+  {
+    term: 'PDPC',
+    full: 'Personal Data Protection Commission (Singapore)',
+    cat: 'govt',
+    def: 'The Singapore regulator responsible for administering the PDPA and issuing guidance on data protection. Published the Advisory Guidelines on the use of Personal Data in AI Recommendation Systems and the Trusted Data Sharing Framework.',
+    seeAlso: ['PDPA'],
+  },
+  {
+    term: 'GST',
+    full: 'Goods and Services Tax (Singapore)',
+    cat: 'govt',
+    def: 'Singapore\'s value-added tax. Currently 9% (as of 2024). The GST InvoiceNow Requirement mandates that GST-registered businesses transmit structured PEPPOL invoices to IRAS, phased from 2025 to 2031.',
+    context: 'The GST requirement is the regulatory driver accelerating InvoiceNow adoption and provides IRAS\'s existing 5th-corner data pipe — the foundation on which the mesh analytical layer is proposed.',
+    seeAlso: ['IRAS', 'InvoiceNow'],
+  },
+  {
+    term: 'COSMIC',
+    full: 'Collaborative Sharing of Money-Laundering Information and Cases',
+    cat: 'govt',
+    def: 'A MAS-operated platform (launched 2023 under the Financial Services and Markets Act 2022) enabling financial institutions in Singapore to share information about customers exhibiting indicators of money-laundering or terrorism financing across FI boundaries.',
+    context: 'A direct Singapore regulatory precedent for the PSI-based cross-bank information sharing in the mesh. The blueprint proposes PSI as a cryptographic upgrade to COSMIC-style matching.',
+    seeAlso: ['MAS', 'AML', 'PSI'],
+  },
+  {
+    term: 'GDPR',
+    full: 'General Data Protection Regulation (EU 2016/679)',
+    cat: 'govt',
+    def: 'The EU\'s primary data protection regulation. Applies to personal data of EU residents. Relevant to the mesh when EU-domiciled counterparties trade with Singapore firms — invoice data may contain EU personal data subject to GDPR Chapter V transfer restrictions.',
+    context: 'Cross-border data flow between SG and EU is an open risk in the blueprint. ZKP-based proofs over personal data may not constitute a "transfer" under GDPR — legal interpretation is pending.',
+    seeAlso: ['PDPA'],
+  },
+  {
+    term: 'DCTCE',
+    full: 'Decentralised Continuous Transaction Control and Exchange',
+    cat: 'govt',
+    def: 'A model of e-invoicing CTC where the tax authority does not pre-clear invoices (as in a clearance model) but instead receives a real-time or near-real-time copy via the AP network. Belgium\'s planned 2028 model and Singapore\'s existing IRAS receipt architecture are DCTCE deployments.',
+    context: 'Singapore already operates a 5-corner DCTCE today; this blueprint proposes extending that DCTCE logic to non-IRAS analytical consumers.',
+    seeAlso: ['IRAS', 'GST'],
+  },
+  {
+    term: 'ViDA',
+    full: 'VAT in the Digital Age (EU)',
+    cat: 'govt',
+    def: 'The EU Council directive (formally adopted 2025) mandating digital reporting requirements for cross-border B2B transactions from 1 July 2030, with domestic e-invoicing harmonisation by 2035. Establishes EN 16931 as the mandatory invoice standard.',
+    context: 'ViDA context used in the peer-jurisdiction comparison showing Singapore\'s GST requirement is ahead of the EU CTC curve.',
+    seeAlso: ['GST'],
+  },
+
+  // ====== FINANCE ======
+  {
+    term: 'AML',
+    full: 'Anti-Money Laundering',
+    cat: 'finance',
+    def: 'Regulatory requirements and processes to detect, prevent and report financial transactions suspected of being proceeds of crime. AML screening is a primary use case for PSI in the mesh — matching invoice counterparties against watchlists without revealing customer lists.',
+    seeAlso: ['KYB', 'COSMIC'],
+  },
+  {
+    term: 'KYB',
+    full: 'Know Your Business',
+    cat: 'finance',
+    def: 'A due-diligence process by which financial institutions verify the identity, ownership, and risk profile of business counterparties before or during a financial relationship. An extension of KYC to business entities.',
+    context: 'Use Case A: banks use the mesh for KYB by verifying supplier UEN, GST registration status and receivables volume via VC presentations — without requesting raw invoice data.',
+    seeAlso: ['AML', 'UEN'],
+  },
+  {
+    term: 'DSO',
+    full: 'Days Sales Outstanding',
+    cat: 'finance',
+    def: 'A financial metric indicating the average number of days a company takes to collect payment after a sale. Calculated as (accounts receivable / revenue) × number of days. A key input to supply-chain finance risk models.',
+    context: 'Sectoral DSO benchmarks are a Use Case C output from the mesh, computed via DP-aggregated histograms across ASEs.',
+    seeAlso: ['DP'],
+  },
+  {
+    term: 'SCF',
+    full: 'Supply-Chain Finance',
+    cat: 'finance',
+    def: 'A set of financing instruments (invoice discounting, reverse factoring, dynamic discounting) that optimise cash flows between buyers and suppliers using the underlying trade invoices as collateral or triggers.',
+    context: 'The primary Use Case A scenario: Acme Pte Ltd seeking S$200K SCF from DBS, underwritten by Bulletproof range proofs over its receivables.',
+    seeAlso: ['Bulletproof', 'DP'],
+  },
+  {
+    term: 'UEN',
+    full: 'Unique Entity Number',
+    cat: 'finance',
+    def: 'A standard identification number issued by the Accounting and Corporate Regulatory Authority (ACRA) to entities operating in Singapore — companies, partnerships, societies, and associations. Used as the primary business identifier in InvoiceNow and PINT-SG invoices.',
+    context: 'UENs form the basis of PEPPOL Participant IDs in the Singapore deployment: 0195:201234567A format. VCs are bound to the holder\'s DID:peppol anchored to their UEN.',
+    seeAlso: ['PEPPOL', 'DID'],
+  },
+  {
+    term: 'MonetaGo',
+    full: 'MonetaGo Inc.',
+    cat: 'finance',
+    def: 'A fintech company providing the Secure Financing platform — a confidential-computing-based registry that detects duplicate invoice financing fraud across banks using hashed invoice fingerprints. Selected by the Association of Banks in Singapore (ABS) to operate Singapore\'s Trade Finance Registry.',
+    context: 'The direct Singapore production precedent for the mesh\'s PSI duplicate-finance detection. The blueprint proposes upgrading MonetaGo\'s hashed-fingerprint approach with formal PSI guarantees.',
+    seeAlso: ['PSI', 'TFR', 'TEE'],
+  },
+  {
+    term: 'TFR',
+    full: 'Trade Finance Registry',
+    cat: 'finance',
+    def: 'The ABS-operated registry in Singapore, operated by MonetaGo, that allows banks to check whether a trade finance instrument (invoice, bill of lading, etc.) has already been used as collateral at another institution — preventing duplicate financing fraud.',
+    seeAlso: ['MonetaGo', 'ABS'],
+  },
+  {
+    term: 'ABS',
+    full: 'Association of Banks in Singapore',
+    cat: 'finance',
+    def: 'The industry body representing banks operating in Singapore. Operated the Trade Finance Registry engagement with MonetaGo and actively participates in MAS-led digital finance initiatives including Project Guardian and COSMIC.',
+    seeAlso: ['MonetaGo', 'MAS', 'TFR'],
+  },
+  {
+    term: 'AIKYA',
+    full: 'J.P. Morgan / BNY Federated Learning Project',
+    cat: 'finance',
+    def: 'An open-source federated learning project (Apache 2.0 licence) by J.P. Morgan and BNY, deployed with NVIDIA FLARE on DGX Cloud, demonstrating that location-based Type-1 fraud patterns invisible in single-bank datasets become detectable after federated training without data sharing.',
+    context: 'The primary real-world production precedent for the mesh\'s FL fraud-detection layer (Use Cases A and B).',
+    seeAlso: ['FL', 'FLARE', 'DP'],
+  },
+  {
+    term: 'SGTraDex',
+    full: 'Singapore Trade Data Exchange',
+    cat: 'finance',
+    def: 'A Singapore government-supported platform enabling the secure sharing of supply-chain data between trade ecosystem stakeholders — shippers, banks, logistics providers — via APIs. Data remains at the source; SGTraDex acts as a data highway not a repository.',
+    context: 'SGTraDex\'s "data highway, not data repository" design principle directly informs the mesh\'s Invariant 1 (Data Locality).',
+    seeAlso: ['DLT', 'InvoiceNow'],
+  },
+
+  // ====== PROTOCOLS & STANDARDS ======
+  {
+    term: 'GNAP',
+    full: 'Grant Negotiation and Authorization Protocol (RFC 9635)',
+    cat: 'protocols',
+    def: 'The IETF successor to OAuth 2.0, providing more flexible fine-grained authorisation for multi-party API access. Supports rich delegation, multi-step interactions, and resource-server separation — better suited to the mesh\'s complex multi-party authorisation model than OAuth 2.0.',
+    biz: 'The modern rule-book for asking "may I have access to this?" across a chain of organisations. Every consumer of the mesh — banks, IRAS, agencies — uses GNAP to negotiate exactly what they\'re allowed to query.',
+    relevance: 'This is the mechanism that lets DBS request "show me a Bulletproof range proof on Acme\'s receivables" and have that request authorised, audited and bounded.',
+    context: 'Used in the mesh\'s Query Broker and Policy Engine for authenticating C5* consumers and enforcing per-capability, per-data-owner access grants.',
+    seeAlso: ['ABAC', 'JWT'],
+  },
+  {
+    term: 'ABAC',
+    full: 'Attribute-Based Access Control',
+    cat: 'protocols',
+    def: 'An access-control model in which access decisions are made based on attributes of the subject (who is requesting), resource (what is being requested), action (what operation), and environment (contextual conditions). More expressive than role-based access control for the mesh\'s heterogeneous consumer base.',
+    biz: 'A way of writing access rules in plain conditions — "any MAS-licensed bank may request a range proof on a supplier that has consented to financing checks" — rather than fixed lists of who can see what. Rules adapt automatically as new consumers join.',
+    relevance: 'This is what lets the same Policy Engine serve very different consumers — banks, regulators, statisticians — without rewriting the rule-book for each.',
+    context: 'The Policy Engine uses ABAC policies expressed in Rego (OPA) or Cedar, evaluated against the consumer\'s VC attributes, the data class, and the capability URN.',
+    seeAlso: ['GNAP', 'PE', 'Rego', 'Cedar'],
+  },
+  {
+    term: 'URN',
+    full: 'Uniform Resource Name',
+    cat: 'protocols',
+    def: 'A form of URI that provides a persistent, location-independent identifier for a resource. Used in the mesh for capability identifiers: urn:peppol:analytics:<capability>:<version>.',
+    context: 'PEPPOL already uses URNs for document type identifiers. The Analytical Service Registry extends this pattern to analytical capabilities.',
+    seeAlso: ['ASR'],
+  },
+  {
+    term: 'RFC 6962',
+    full: 'Certificate Transparency (IETF RFC 6962)',
+    cat: 'protocols',
+    def: 'The IETF specification defining the Certificate Transparency log format — an append-only, cryptographically verifiable log of all issued TLS certificates. Defines Signed Tree Heads, inclusion proofs, and consistency proofs.',
+    context: 'The mesh transparency log is designed on the RFC 6962 pattern. ASEs publish Signed Tree Heads; data owners can fetch inclusion proofs to verify their data was queried as claimed.',
+    seeAlso: ['TLog', 'DLT'],
+  },
+  {
+    term: 'RA-TLS',
+    full: 'Remote Attestation TLS',
+    cat: 'protocols',
+    def: 'An extension of TLS that embeds hardware attestation evidence (TEE quote) into the X.509 certificate or TLS handshake, enabling mutual verification of both the encrypted channel and the hardware integrity of the remote enclave.',
+    seeAlso: ['TEE', 'RATS', 'TLS'],
+  },
+  {
+    term: 'TLS',
+    full: 'Transport Layer Security',
+    cat: 'protocols',
+    def: 'The cryptographic protocol providing authenticated, encrypted communication over TCP/IP. All PEPPOL AS4 connections and all mesh API calls use TLS 1.3 minimum.',
+    seeAlso: ['AS4', 'RA-TLS'],
+  },
+  {
+    term: 'SHA-256',
+    full: 'Secure Hash Algorithm 256-bit (FIPS 180-4)',
+    cat: 'protocols',
+    def: 'A cryptographic hash function producing a 256-bit digest. Used in the mesh to compute content hashes of invoices (stored at ASEs), Merkle tree nodes in the transparency log, and commitment inputs.',
+    seeAlso: ['TLog'],
+  },
+  {
+    term: 'ISO 6523',
+    full: 'ISO 6523 — Structure for the Identification of Organisations',
+    cat: 'protocols',
+    def: 'An ISO standard defining a structure for globally unique organisation identifiers. PEPPOL participant IDs use ICD codes from ISO 6523 to namespace organisation identifiers — e.g. 0195 is the Singapore UEN ICD code.',
+    seeAlso: ['UEN', 'PEPPOL'],
+  },
+  {
+    term: 'XACML',
+    full: 'eXtensible Access Control Markup Language (OASIS)',
+    cat: 'protocols',
+    def: 'A declarative XML-based policy language for attribute-based access control. An alternative to Rego/Cedar for expressing mesh Policy Engine rules. Cited alongside Cedar and OPA as implementation options.',
+    seeAlso: ['ABAC', 'PE'],
+  },
+
+  // ====== DATA ARCHITECTURE ======
+  {
+    term: 'QB',
+    full: 'Query Broker',
+    cat: 'data',
+    def: 'The orchestration layer of the mesh. Translates a consumer\'s analytical query intent (capability URN + parameters + VC presentation) into a federated execution plan, validates ABAC + VC authorisation via the Policy Engine, dispatches sub-queries to ASEs, aggregates results, writes to the transparency log, and returns the result with an inclusion proof.',
+    seeAlso: ['ASE', 'PE', 'TLog'],
+  },
+  {
+    term: 'TLog',
+    full: 'Transparency Log',
+    cat: 'data',
+    def: 'An append-only Merkle tree (RFC 6962 Certificate Transparency design) recording every analytical event in the mesh. Periodic Signed Tree Heads are anchored to a public DLT. Data owners can fetch inclusion and consistency proofs to independently verify every query that touched their data.',
+    context: 'A key mechanism for realising data-owner trust: operators cannot conceal events from data owners, and independent auditors can verify the log without operator cooperation.',
+    seeAlso: ['RFC 6962', 'DLT', 'STH'],
+  },
+  {
+    term: 'STH',
+    full: 'Signed Tree Head',
+    cat: 'data',
+    def: 'A digitally signed snapshot of the Merkle tree root at a given log index and timestamp, published by the transparency log. Signed Tree Heads are the anchoring unit periodically committed to the DLT. Verifiers use STHs to check consistency and inclusion proofs.',
+    seeAlso: ['TLog', 'RFC 6962'],
+  },
+  {
+    term: 'PE',
+    full: 'Policy Engine',
+    cat: 'data',
+    def: 'The access-control evaluation component embedded in the Query Broker. Evaluates ABAC policies (in Rego, Cedar, or XACML 3.0) against the consumer\'s attributes, the requested capability, the resource type, and the regulatory context. Returns a Permit/Deny decision with obligations such as ε budget allocation.',
+    seeAlso: ['ABAC', 'QB', 'DP'],
+  },
+  {
+    term: 'TRL',
+    full: 'Technology Readiness Level',
+    cat: 'data',
+    def: 'A 1–9 scale (originally NASA, adopted by EU Horizon) measuring the maturity of a technology. TRL 1–3: basic research; TRL 4–6: laboratory and prototype; TRL 7–8: system prototype in operational environment; TRL 9: system proven in operational environment.',
+    context: 'Used in the PET evaluation table to score each technology\'s deployment readiness. TEEs and DP are TRL 9 (production); FHE is TRL 6–7.',
+    seeAlso: ['PET'],
+  },
+  {
+    term: 'SSIC',
+    full: 'Singapore Standard Industrial Classification',
+    cat: 'data',
+    def: 'The Singapore classification system for categorising economic activities. Used in IRAS GST returns and in the mesh\'s scope filters for sectoral aggregate queries (e.g. SSIC 56XXX = Food and Beverage service activities).',
+    context: 'Use Case B: IRAS analyst queries the mesh for histogram of GST-to-revenue ratios across SSIC-56 firms with ε = 1.0.',
+    seeAlso: ['IRAS', 'DP'],
+  },
+  {
+    term: 'DSO',
+    full: 'Days Sales Outstanding',
+    cat: 'finance',
+    def: 'A financial metric indicating the average number of days a company takes to collect payment after a sale. Calculated as (accounts receivable / revenue) × number of days. A key input to supply-chain finance risk models.',
+    context: 'Sectoral DSO benchmarks are a Use Case C output from the mesh, computed via DP-aggregated histograms across ASEs.',
+    seeAlso: ['DP'],
+  },
+  {
+    term: 'OPA',
+    full: 'Open Policy Agent',
+    cat: 'data',
+    def: 'An open-source, general-purpose policy engine using the Rego declarative language. Used in the mesh\'s Policy Engine as one implementation option for ABAC rule evaluation.',
+    seeAlso: ['ABAC', 'PE'],
+  },
+  {
+    term: 'GAN',
+    full: 'Generative Adversarial Network',
+    cat: 'data',
+    def: 'A deep-learning architecture consisting of a generator and a discriminator trained adversarially. Used for synthetic data generation — creating realistic but privacy-preserving synthetic invoice corpora for model training and sandbox testing.',
+    seeAlso: ['DP', 'FL'],
+  },
+  {
+    term: 'Laplace Mechanism',
+    full: 'Laplace Mechanism for Differential Privacy',
+    cat: 'data',
+    def: 'The canonical noise-addition mechanism for achieving (ε, 0)-differential privacy on real-valued queries. Adds Laplace-distributed noise with scale b = Δ/ε, where Δ is the query\'s L1 sensitivity (the maximum change in output for the removal of one record).',
+    context: 'Used in Use Case B: each ASE applies Laplace noise with scale Δ/ε = 1.0/0.25 = 4.0 (partitioned across 4 ASEs by parallel composition).',
+    seeAlso: ['DP'],
+  },
+  {
+    term: 'AR / AP',
+    full: 'Accounts Receivable / Accounts Payable',
+    cat: 'data',
+    def: 'Accounts Receivable (AR): amounts owed to a business by its customers. Accounts Payable (AP): amounts a business owes to its suppliers. AR/AP reconciliation across PEPPOL invoices is a Use Case C self-service analytics scenario.',
+    biz: 'AR is the money your customers still owe you; AP is what you owe your suppliers. Reconciling these across PEPPOL invoices gives you a single view of cash flow without manual spreadsheet juggling.',
+    seeAlso: ['SCF'],
+  },
+
+  // ====== NEW TERMS — added Apr 2026 ======
+  {
+    term: 'FAM',
+    full: 'Federated Analytics Mesh',
+    cat: 'data',
+    def: 'The umbrella term for the privacy-preserving analytics layer built on top of the PEPPOL document network. FAM federates computation across access points so analytical queries can be answered without centralising raw business data.',
+    biz: 'A way to get answers from data held across many different companies without anyone having to send their actual data anywhere. Each company keeps its records on its own systems, but trusted answers can still be produced for regulators, banks or auditors.',
+    analogy: 'Like polling a panel of experts on a question — each gives an opinion privately, and only the aggregated answer is shared.',
+    relevance: 'This is how Singapore can run cross-bank financing checks, GST fraud sweeps and economic statistics without ever creating a central honeypot of commercially sensitive invoices.',
+    seeAlso: ['ASE', 'Broker', 'PEPPOL'],
+  },
+  {
+    term: 'Bloom Filter',
+    full: 'Bloom Filter',
+    cat: 'data',
+    def: 'A space-efficient probabilistic data structure that tests whether an element is a member of a set. Returns either "definitely not in set" or "possibly in set" with a tunable false-positive rate. Used as a private encoding for set-membership queries.',
+    biz: 'A compact way to share "is this item in my list?" without revealing the list itself. The structure is fuzzy by design — you can confirm a hit but never reconstruct the original entries.',
+    analogy: 'Like a fingerprint smudge — recognisable enough to match a known print, but not detailed enough to reconstruct the finger.',
+    relevance: 'This is how banks can check whether they have already financed an invoice without revealing which invoices they hold.',
+    seeAlso: ['PSI', 'KKRT'],
+  },
+  {
+    term: 'Merkle Tree',
+    full: 'Merkle Hash Tree',
+    cat: 'data',
+    def: 'A binary tree where each leaf is a hash of a data block and each internal node is a hash of its two children. The single root hash commits to the entire dataset; any single entry\'s membership can be proven with O(log n) hashes.',
+    biz: 'A tamper-evident summary of a large list of records. Anyone can prove a single record was in the list at a specific point in time, without having to share the whole list.',
+    analogy: 'Like a wax seal on a stack of pages — break it and everyone knows the stack has been altered.',
+    relevance: 'This is how the Transparency Log can prove your invoice was logged honestly without exposing every other entry in the log.',
+    seeAlso: ['TLog', 'STH', 'Inclusion Proof', 'RFC 6962'],
+  },
+  {
+    term: 'DIF',
+    full: 'Decentralised Identity Foundation',
+    cat: 'protocols',
+    def: 'A standards body developing open specifications for decentralised identity, including the Presentation Exchange specification used to express what credentials a verifier requires.',
+    biz: 'The international standards body that writes the rule-book for how digital credentials are requested and presented. Singapore agencies and banks build on these standards rather than inventing their own.',
+    relevance: 'Without DIF standards, every bank would invent its own credential format and the PEPPOL ecosystem would fragment.',
+    seeAlso: ['VC', 'VP', 'Presentation Definition'],
+  },
+  {
+    term: 'VP',
+    full: 'Verifiable Presentation',
+    cat: 'crypto',
+    def: 'A cryptographic envelope that bundles one or more selectively-disclosed Verifiable Credentials and binds them to the holder via a proof of possession. The VP is what a holder actually sends to a verifier.',
+    biz: 'A signed package that proves a specific set of facts — drawn from one or more credentials — without revealing anything else. The recipient can verify it came from the right person and the facts are true.',
+    analogy: 'Like a notarised affidavit — a focused statement of just the facts you want to assert, signed and stamped.',
+    relevance: 'This is the actual artefact a supplier sends to a bank to prove its receivables — selective, signed, and unforgeable.',
+    seeAlso: ['VC', 'SD-JWT', 'BBS+'],
+  },
+  {
+    term: 'Privacy Budget',
+    full: 'Privacy Budget (Differential Privacy)',
+    cat: 'pet',
+    def: 'A scarce resource (denoted ε) that quantifies how much information about individual records can leak across all DP queries against a dataset. Each query consumes a portion of the budget; once exhausted, the dataset is locked from further DP queries.',
+    biz: 'A built-in spending limit on how much can be learned about any single business from a dataset. Once the limit is reached, no more queries are answered — protecting suppliers from being inadvertently identified through repeated questioning.',
+    analogy: 'Like a bank account for privacy — every analytical question debits some balance, and when the balance hits zero, the account closes.',
+    relevance: 'This is what stops IRAS or any other consumer from running thousands of narrow queries to triangulate a specific supplier\'s data.',
+    seeAlso: ['DP', 'Laplace Mechanism'],
+  },
+  {
+    term: 'Wallet',
+    full: 'Digital Credential Wallet',
+    cat: 'infra',
+    def: 'Software (mobile, desktop or server-side) that stores a holder\'s Verifiable Credentials, manages their cryptographic keys, and assembles Verifiable Presentations on demand under the holder\'s control.',
+    biz: 'Where a business keeps its digital credentials — its tax registration, its proof of trade volumes, its receivables attestations. The business decides what to share and with whom; nothing leaves the wallet without consent.',
+    analogy: 'Like a physical wallet holding your ID, driver\'s licence and credit cards — you choose which to show and to whom.',
+    relevance: 'This is where Acme stores the VC issued by ASE-1 and from which it builds the proof presented to DBS.',
+    seeAlso: ['VC', 'VP', 'DID'],
+  },
+  {
+    term: 'Inclusion Proof',
+    full: 'Merkle Inclusion Proof',
+    cat: 'data',
+    def: 'A short audit path through a Merkle tree (O(log n) hashes) that proves a specific leaf is included in the tree committed to by a known root hash. Verification only requires the leaf, the audit path, and the root.',
+    biz: 'A small piece of evidence that proves your record made it into the official log, without anyone having to reveal or trust the whole log.',
+    analogy: 'Like a return receipt for a registered letter — a tiny stub that proves the post office really did process your envelope.',
+    relevance: 'This is what lets Acme prove, months later, that the financing decision was logged honestly — even if it never had access to the rest of the log.',
+    seeAlso: ['Merkle Tree', 'TLog', 'STH'],
+  },
+  {
+    term: 'Cedar',
+    full: 'Cedar Policy Language (AWS)',
+    cat: 'protocols',
+    def: 'An open-source policy language developed by AWS for expressing fine-grained, attribute-based access control rules. Cedar policies are statically analysable for safety properties and conflicts.',
+    biz: 'One of the rule-book languages the Policy Engine can speak. Easier for non-developers to read and audit than older policy languages.',
+    relevance: 'Provides Singapore agencies with a vendor-neutral choice for writing policy rules they can independently verify.',
+    seeAlso: ['Rego', 'OPA', 'ABAC'],
+  },
+  {
+    term: 'Rego',
+    full: 'Rego Policy Language (OPA)',
+    cat: 'protocols',
+    def: 'The declarative policy language used by Open Policy Agent (OPA) to express authorisation, admission and routing rules. Rego policies are evaluated against structured input data to produce decisions.',
+    biz: 'The primary rule-book language used by the Policy Engine. Each rule encodes a question like "is this consumer allowed to see this aggregate?" and the engine answers yes/no with reasons.',
+    analogy: 'Like the conditional clauses in a contract — written precisely enough that two parties can agree on what each rule means.',
+    relevance: 'This is how Singapore can codify regulatory rules (PDPA consent, COSMIC sharing constraints, ε-budget caps) into machine-checkable policies.',
+    seeAlso: ['OPA', 'Cedar', 'ABAC'],
+  },
+  {
+    term: 'Presentation Definition',
+    full: 'DIF Presentation Exchange Definition',
+    cat: 'protocols',
+    def: 'A JSON document, defined by the DIF Presentation Exchange specification, that expresses what a verifier requires from a holder — which credential types, which fields, which formats and which constraints.',
+    biz: 'A structured shopping list a verifier sends to a supplier saying "to prove your case, please show me these specific facts." The supplier\'s wallet reads it and assembles only what was asked for.',
+    analogy: 'Like a visa application form — the embassy lists exactly which documents to submit; you don\'t hand over your whole filing cabinet.',
+    relevance: 'This is the artefact DBS sends to Acme in Step 2 — the formal request for proof of receivables, expressed in a standard format.',
+    seeAlso: ['DIF', 'VP', 'VC'],
+  },
+
+  // ====== IR + dex integration (added April 2026) ======
+  {
+    term: 'IR',
+    full: 'Invoice Repository',
+    cat: 'peppol',
+    def: 'A centralised, pilot-phase, dex-onboarded Organization that receives PEPPOL invoice payloads forwarded by sender Access Points (C2) in parallel to the standard 4-corner path. Hosts a co-located ASE for invoice DataElements; analytical access is PET-mediated. Identified in dex by an Organization record (UEN + did:ethr:0x… address). [TODO: verify against IR Jira (project IR, board 60)]',
+    biz: 'Singapore\'s authorised vault for PEPPOL invoices — your Access Point quietly forwards a copy here while the original still flows to your buyer. Banks and regulators never read the vault directly; they ask the analytical layer questions and receive proofs.',
+    analogy: 'Like a bonded warehouse for invoices — accredited, monitored, and queryable only through the customs window, never the loading dock.',
+    relevance: 'IR is the data-holding entity that makes invoice-domain federated analytics possible without each AP having to host its own per-invoice store. The FAM treats IR as a Data Provider, not a Data Owner.',
+    context: 'Onboarded to dex via the existing Organization + ServiceProviderRelationship model (one SPR row per supplier, per DataElement, status APPROVED). Pilot phase as of April 2026.',
+    seeAlso: ['Data Provider', 'Organization', 'ServiceProviderRelationship', 'Consent Manifest', 'ASE'],
+  },
+  {
+    term: 'Data Provider',
+    full: 'Data Provider (operational role)',
+    cat: 'data',
+    def: 'The operational role of an Organization that holds data on behalf of one or more data owners and exposes it via PET-mediated query interfaces. In dex today this role is mapped by the combination Organization + ServiceProviderRelationship (DataOwner ↔ ServiceProvider per DataElement). Distinct from Data Owner (who retains rights) and Data Consumer (who queries).',
+    biz: 'The party that physically holds your data so consumers can query it without seeing it raw. IR is a Data Provider for PEPPOL invoices; a carrier could be a Data Provider for bills of lading.',
+    analogy: 'Like a custodian bank for securities — they hold the assets on your behalf, but they don\'t own them and they don\'t give them away; they answer authorised questions about them.',
+    relevance: 'Multi-provider fan-out queries (e.g. a bank needing PEPPOL data plus carrier data) require multiple Data Providers participating in the same FAM query.',
+    context: 'There is no first-class "DataProvider" entity in dex today — the role is encoded by the SPR linking an Organization to a DataElement on behalf of a DataOwner.',
+    seeAlso: ['IR', 'Organization', 'ServiceProviderRelationship', 'Subscription', 'Multi-Provider Fan-Out'],
+  },
+  {
+    term: 'Consent Manifest',
+    full: 'Consent Manifest (data-owner-signed access contract)',
+    cat: 'data',
+    def: 'A data-owner-signed, VC-shaped artefact specifying: which Data Providers hold the owner\'s data; which Data Consumers may query which DataElementIDs under which UseCaseID (query class); the ε-budget per consumer per window; the expiry; and the revocation status-list pointer. Held independently by both the data-holding Organization (e.g. IR) and dex (admin-corev2); each verifies it independently at query time. Revocation propagates via Status List 2021. [TODO: requires admin-corev2 schema extension to ServiceProviderRelationship/Subscription to record manifest fields]',
+    biz: 'A signed contract from the supplier saying "DBS may ask these specific questions about my invoices, with this much privacy budget, until this date." Both IR and dex hold a copy and check it independently — no central consent server to fail.',
+    analogy: 'Like a power-of-attorney document with named beneficiaries and specific permitted actions — every authorised counterparty has its own copy and can verify it without phoning the issuer.',
+    relevance: 'Solves the cross-system consent problem (IR has its own permission model; dex has its own consumer registry) without making either side authoritative. This is the cryptographic contract layer of the FAM.',
+    context: 'Conceptually a new artefact layered on top of the existing dex Subscription + ServiceProviderRelationship model. Use Case A Step 0 demonstrates issuance.',
+    seeAlso: ['Subscription', 'ServiceProviderRelationship', 'Status List', 'Data Owner', 'PET Subscription', 'VC'],
+  },
+  {
+    term: 'PET Subscription',
+    full: 'Privacy-Enhancing-Technology Subscription',
+    cat: 'data',
+    def: 'An Organization\'s election to apply FAM PET protections (ZKP, MPC, FL, DP, PSI) to one or more DataElements. In dex this is recorded as a flag on the existing Subscription / ServiceProviderRelationship row. Once a DataElement is PET-subscribed, consumers can only query it through the FAM query layer — no raw pull is permitted.',
+    biz: 'A switch the data owner (or its provider) flips that says "from now on, anyone who wants this data has to ask via PETs — they can\'t download it." Once flipped, raw access is closed off at the query layer.',
+    analogy: 'Like moving a document from an open shelf to a secure reading room — the document still exists, but you can only inspect it under supervised, logged conditions.',
+    relevance: 'Defines the boundary between dex\'s existing raw-data sharing and the FAM\'s privacy-mediated query model. Subscription is the throttle.',
+    context: 'No PET hooks exist in pitstop-core today — the PET Subscription flag is the design lever, but enforcement requires `[TODO: requires pitstop-core PET integration work]`.',
+    seeAlso: ['PET', 'Subscription', 'Consent Manifest', 'ZKP', 'MPC', 'FL'],
+  },
+  {
+    term: 'DataElementID',
+    full: 'DataElementID (dex string identifier)',
+    cat: 'data',
+    def: 'Dex\'s plain-string identifier for a discrete addressable unit of data exposed by an Organization (examples in seed data: `sales_invoice`, `invoice`, `INVOICE`). The unit of consent granularity in Subscription, ServiceProviderRelationship and Consent Manifest. Defined at `dex-monorepo/be/sharelib/services/models/data_element.go:19-32`.',
+    context: 'The FAM target architecture references analytical capabilities under `urn:peppol:analytics:*` URN scheme; dex itself uses bare strings rather than URNs. [TODO: define ASR-to-dex DataElementID mapping convention.]',
+    seeAlso: ['Data Provider', 'Subscription', 'ServiceProviderRelationship', 'ASR'],
+  },
+  {
+    term: 'Multi-Provider Fan-Out',
+    full: 'Multi-Provider Fan-Out (FAM query pattern)',
+    cat: 'protocols',
+    def: 'A query pattern in which one Consumer request spans multiple Data Providers (e.g. IR for invoice data plus a Carrier for bill-of-lading data). The Query Broker fans out independent sub-queries to each Provider\'s ASE, verifies the relevant Consent Manifest at each, logs each sub-query independently in each Provider\'s transparency log, and assembles a unified result. [TODO: requires pitstop-core federation work — dex queries are single-provider today.]',
+    biz: 'How a bank gets answers spanning two data sources at once — say invoice totals from IR and shipment records from a carrier — without either provider needing to know about the other, and without the bank seeing raw data from either.',
+    analogy: 'Like a metasearch engine that calls several APIs in parallel and merges the results, except each backend is a privacy-mediated ASE and each call is independently consent-checked and audit-logged.',
+    relevance: 'This is the new capability that lifts the FAM beyond single-provider analytics. The Consent Manifest is what makes it composable across Providers without a central authority.',
+    context: 'Pitstop-core today implements single-provider REST GET (`getMessages` filtered by orgId/dataElementId/requestId) — see `pitstop-core/server/src/routes/data/controller.ts`. No broker or federation class exists.',
+    seeAlso: ['Query Broker', 'Consent Manifest', 'ASE', 'Data Provider'],
+  },
+];
+
+// Deduplicate (DSO appeared twice)
+const seen = new Set();
+const DICT = TERMS.filter(t => {
+  if (seen.has(t.term)) return false;
+  seen.add(t.term);
+  return true;
+});
+
+// =====================================================================
+// RENDER
+// =====================================================================
+let activeFilter = 'all';
+let searchQuery = '';
+
+function buildAlphaBar() {
+  const bar = document.getElementById('alpha-bar');
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const termFirstLetters = new Set(DICT.map(t => t.term[0].toUpperCase()));
+  letters.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'alpha-btn' + (termFirstLetters.has(l) ? ' has-entries' : '');
+    btn.textContent = l;
+    btn.dataset.letter = l;
+    if (termFirstLetters.has(l)) {
+      btn.addEventListener('click', () => {
+        document.getElementById('alpha-anchor-' + l)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    bar.appendChild(btn);
+  });
+}
+
+function renderDict() {
+  const container = document.getElementById('dict-content');
+  const query = searchQuery.toLowerCase().trim();
+
+  let filtered = DICT.filter(t => {
+    if (activeFilter !== 'all' && t.cat !== activeFilter) return false;
+    if (query) {
+      return (
+        t.term.toLowerCase().includes(query) ||
+        (t.full || '').toLowerCase().includes(query) ||
+        t.def.toLowerCase().includes(query) ||
+        (t.biz || '').toLowerCase().includes(query) ||
+        (t.analogy || '').toLowerCase().includes(query) ||
+        (t.relevance || '').toLowerCase().includes(query) ||
+        (t.context || '').toLowerCase().includes(query)
+      );
+    }
+    return true;
+  });
+
+  // Update count
+  document.getElementById('count-shown').textContent = filtered.length;
+  document.getElementById('stat-visible').textContent = filtered.length;
+
+  // No results
+  document.getElementById('no-results').classList.toggle('show', filtered.length === 0);
+
+  // Group by category, maintaining category order
+  const grouped = {};
+  CATEGORIES.forEach(c => { grouped[c.id] = []; });
+  filtered.forEach(t => { if (grouped[t.cat]) grouped[t.cat].push(t); });
+
+  // Sort each group alphabetically
+  Object.keys(grouped).forEach(k => {
+    grouped[k].sort((a, b) => a.term.localeCompare(b.term));
+  });
+
+  container.innerHTML = '';
+
+  // Build category sections
+  CATEGORIES.forEach(cat => {
+    const entries = grouped[cat.id];
+    if (entries.length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'category cat-' + cat.id;
+    section.dataset.catId = cat.id;
+
+    // Cat header
+    section.innerHTML = `
+      <div class="cat-header">
+        <div class="cat-icon">${cat.icon}</div>
+        <div class="cat-title">${cat.title}</div>
+        <div class="cat-count">${entries.length} term${entries.length !== 1 ? 's' : ''}</div>
+      </div>
+    `;
+
+    const grid = document.createElement('div');
+    grid.className = 'entries';
+
+    // Track letters for alpha anchors
+    let lastLetter = null;
+
+    entries.forEach(t => {
+      const firstLetter = t.term[0].toUpperCase();
+
+      // Alpha anchor (only when not filtering/searching)
+      if (!query && activeFilter === 'all' && firstLetter !== lastLetter) {
+        const anchor = document.createElement('div');
+        anchor.className = 'alpha-anchor';
+        anchor.id = 'alpha-anchor-' + firstLetter;
+        grid.appendChild(anchor);
+        lastLetter = firstLetter;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'entry';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.dataset.term = t.term;
+      card.addEventListener('click', (e) => {
+        // Don't open modal when clicking a "See also" link
+        if (e.target.closest('.see-also')) return;
+        openTermModal(t);
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openTermModal(t);
+        }
+      });
+
+      const seeAlsoHtml = t.seeAlso?.length
+        ? `<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;">
+            <span style="font-size:11px;color:var(--text-dim);font-family:var(--mono);">See also:</span>
+            ${t.seeAlso.map(s => `<span class="see-also" onclick="searchFor('${s}')">${s}</span>`).join('')}
+           </div>`
+        : '';
+
+      const highlightText = (text) => {
+        if (!query) return text;
+        const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+        return text.replace(re, '<mark style="background:rgba(57,255,132,.25);color:inherit;border-radius:2px;">$1</mark>');
+      };
+
+      card.innerHTML = `
+        <div class="entry-head">
+          <span class="entry-term">${highlightText(t.term)}</span>
+          ${t.full ? `<span class="entry-full">${highlightText(t.full)}</span>` : ''}
+          <div class="entry-tags">
+            <span class="entry-tag ${cat.tagClass}">${cat.title.split(' ')[0].toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="entry-def">${highlightText(t.def)}</div>
+        ${t.biz ? `<div class="entry-context" style="border-left-color:var(--accent-2);"><strong>Business perspective →</strong> ${highlightText(t.biz)}</div>` : ''}
+        ${t.analogy ? `<div class="entry-context" style="border-left-color:var(--accent-3);"><strong>Analogy →</strong> ${highlightText(t.analogy)}</div>` : ''}
+        ${t.relevance ? `<div class="entry-context" style="border-left-color:var(--accent-4);"><strong>Why it matters →</strong> ${highlightText(t.relevance)}</div>` : ''}
+        ${t.context ? `<div class="entry-context"><strong>In this blueprint →</strong> ${highlightText(t.context)}</div>` : ''}
+        ${seeAlsoHtml}
+      `;
+
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+}
+
+// =====================================================================
+// TERM DETAIL MODAL
+// =====================================================================
+function openTermModal(t) {
+  const cat = CATEGORIES.find(c => c.id === t.cat);
+  const overlay = document.getElementById('term-modal');
+  const tagEl = document.getElementById('modal-tag');
+  const termEl = document.getElementById('modal-term');
+  const fullEl = document.getElementById('modal-full');
+  const bodyEl = document.getElementById('modal-body');
+
+  tagEl.textContent = cat ? cat.title : t.cat;
+  if (cat) tagEl.className = 'term-modal-tag ' + cat.tagClass;
+  termEl.textContent = t.term;
+  fullEl.textContent = t.full || '';
+  fullEl.style.display = t.full ? '' : 'none';
+
+  const sections = [];
+  sections.push({ cls: 'def', label: 'Definition', text: t.def });
+  if (t.biz)       sections.push({ cls: 'biz',       label: 'Business perspective', text: t.biz });
+  if (t.analogy)   sections.push({ cls: 'analogy',   label: 'Analogy',              text: t.analogy });
+  if (t.relevance) sections.push({ cls: 'relevance', label: 'Why it matters',       text: t.relevance });
+  if (t.context)   sections.push({ cls: 'context',   label: 'In this blueprint',    text: t.context });
+
+  bodyEl.innerHTML = sections.map(s => `
+    <div class="modal-section ${s.cls}">
+      <span class="modal-section-label">${s.label}</span>
+      <div class="modal-section-text">${escapeHtml(s.text)}</div>
+    </div>
+  `).join('');
+
+  if (t.seeAlso?.length) {
+    const seeAlsoEl = document.createElement('div');
+    seeAlsoEl.className = 'modal-seealso';
+    seeAlsoEl.innerHTML = `<span class="modal-seealso-label">See also</span>` +
+      t.seeAlso.map(s => `<button class="modal-seealso-link" data-term="${escapeAttr(s)}">${escapeHtml(s)}</button>`).join('');
+    bodyEl.appendChild(seeAlsoEl);
+    seeAlsoEl.querySelectorAll('.modal-seealso-link').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const linked = DICT.find(x => x.term === btn.dataset.term);
+        if (linked) openTermModal(linked);
+        else { closeTermModal(); searchFor(btn.dataset.term); }
+      });
+    });
+  }
+
+  overlay.hidden = false;
+  // Force reflow before adding open state for transition
+  // eslint-disable-next-line no-unused-expressions
+  overlay.offsetHeight;
+  overlay.dataset.open = 'true';
+  document.body.classList.add('modal-open');
+  document.getElementById('modal-close').focus();
+}
+
+function closeTermModal() {
+  const overlay = document.getElementById('term-modal');
+  overlay.dataset.open = 'false';
+  document.body.classList.remove('modal-open');
+  setTimeout(() => { overlay.hidden = true; }, 200);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) {
+  return String(s).replace(/"/g, '&quot;');
+}
+
+// Modal event wiring
+document.getElementById('modal-close').addEventListener('click', closeTermModal);
+document.getElementById('term-modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeTermModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('term-modal').dataset.open === 'true') {
+    closeTermModal();
+  }
+});
+
+function searchFor(term) {
+  const inp = document.getElementById('search');
+  inp.value = term;
+  searchQuery = term.toLowerCase();
+  activeFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === 'all'));
+  renderDict();
+  inp.focus();
+}
+
+// =====================================================================
+// EVENTS
+// =====================================================================
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderDict();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeFilter = btn.dataset.cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderDict();
+  });
+});
+
+// =====================================================================
+// INIT
+// =====================================================================
+document.getElementById('stat-total').textContent = DICT.length;
+buildAlphaBar();
+renderDict();
+</script>
+
+</body>
+</html>

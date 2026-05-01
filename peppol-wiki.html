@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Federated Analytics Mesh (FAM) — Knowledge Base</title>
+<style>
+/* ============================================================
+   DESIGN DIRECTION: Refined editorial-technical. 
+   A command-centre aesthetic — dark, structured, precise.
+   Fixed sidebar acts as a persistent context anchor.
+   Typography: display in Syne (geometric, distinctive),
+   body in IBM Plex Sans (technical precision).
+   Accent: vivid phosphor green on deep navy.
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:           #070c18;
+  --bg-mid:       #0d1424;
+  --bg-card:      #131d30;
+  --bg-elevated:  #1b2640;
+  --border:       #1f2f4a;
+  --border-strong:#2e4470;
+  --text:         #dde4f4;
+  --text-muted:   #7a8caf;
+  --text-dim:     #4a5a7a;
+  --accent:       #39ff84;        /* phosphor green */
+  --accent-glow:  rgba(57,255,132,.18);
+  --accent-2:     #38bdf8;
+  --accent-3:     #fbbf24;
+  --accent-4:     #f472b6;
+  --accent-5:     #a78bfa;
+  --sidebar-w:    280px;
+  --topbar-h:     52px;
+  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  --display: 'Syne', 'IBM Plex Sans', sans-serif;
+  --body: 'IBM Plex Sans', -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+::selection { background: rgba(57,255,132,.22); color: var(--text); }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===================== LAYOUT SHELL ===================== */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+  background: var(--bg-mid);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  z-index: 20;
+}
+
+/* brand */
+.brand {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.brand-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.brand-title {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.brand-title .hi { color: var(--accent); }
+.brand-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* project meta strip */
+.meta-strip {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.meta-key { color: var(--text-dim); font-family: var(--mono); }
+.meta-val { color: var(--text-muted); font-weight: 500; }
+.meta-val.live {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: blink 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* navigation */
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.nav::-webkit-scrollbar { width: 4px; }
+.nav::-webkit-scrollbar-track { background: transparent; }
+.nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.nav-section-label {
+  padding: 0 24px 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.nav-item {
+  display: flex;
+  align-items: stretch;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover { background: var(--bg-card); }
+.nav-item:active { background: var(--bg-elevated); transform: translateX(2px); }
+.nav-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.nav-item.active { background: var(--bg-elevated); }
+.nav-item-bar {
+  width: 3px;
+  background: transparent;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  border-radius: 0 2px 2px 0;
+}
+.nav-item.active .nav-item-bar { background: var(--accent); }
+.nav-item-content {
+  padding: 12px 16px 12px 18px;
+  flex: 1;
+  min-width: 0;
+}
+.nav-item-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.nav-item[data-page="overview"]    .nav-item-tag { color: var(--accent); }
+.nav-item[data-page="architecture"] .nav-item-tag { color: var(--accent-2); }
+.nav-item[data-page="action"]       .nav-item-tag { color: var(--accent-3); }
+.nav-item[data-page="dictionary"]   .nav-item-tag { color: var(--accent-5); }
+
+.nav-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.nav-item-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* sub-nav anchors inside architecture page */
+.nav-sub {
+  display: none;
+  padding: 4px 0 8px 0;
+}
+.nav-item.active + .nav-sub { display: block; }
+.nav-sub-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 42px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.12s;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-sub-link:hover { color: var(--text); }
+.nav-sub-link:active { color: var(--accent); transform: translateX(2px); }
+.nav-sub-link:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 3px; }
+.nav-sub-link::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0;
+}
+
+/* progress indicator */
+.nav-progress {
+  padding: 4px 24px;
+  margin-bottom: 4px;
+}
+.np-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  margin-bottom: 5px;
+}
+.np-bar {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+}
+.np-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: 1px;
+  transition: width 0.4s cubic-bezier(.25,.46,.45,.94);
+  width: 0%;
+}
+
+/* sidebar footer */
+.sidebar-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sf-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+.sf-btns {
+  display: flex;
+  gap: 6px;
+}
+.sf-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.sf-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.sf-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.sf-btn svg { width: 14px; height: 14px; }
+
+/* keyboard shortcut hint */
+.kbd-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+kbd {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ===================== MAIN AREA ===================== */
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* top bar */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.topbar-breadcrumb .sep { opacity: 0.35; }
+.topbar-breadcrumb .page-name {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar-breadcrumb .page-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+.tag-overview { background: rgba(57,255,132,.12); color: var(--accent); }
+.tag-arch     { background: rgba(56,189,248,.12); color: var(--accent-2); }
+.tag-action   { background: rgba(251,191,36,.12); color: var(--accent-3); }
+.tag-dict     { background: rgba(167,139,250,.12); color: var(--accent-5); }
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.topbar-btn {
+  height: 30px;
+  padding: 0 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.topbar-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.topbar-btn:active { transform: scale(0.96); }
+.topbar-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.topbar-btn svg { width: 12px; height: 12px; }
+
+/* page nav arrows */
+.pager {
+  display: flex;
+  gap: 4px;
+}
+.pager-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pager-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.pager-btn:active:not(:disabled) { transform: scale(0.94); }
+.pager-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.pager-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.pager-btn svg { width: 14px; height: 14px; }
+
+/* ===================== IFRAME CONTAINER ===================== */
+.frame-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.frame-panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(.4,0,.2,1);
+  transform: translateX(24px);
+}
+.frame-panel.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.frame-panel.exit-left {
+  opacity: 0;
+  transform: translateX(-24px);
+}
+
+.frame-panel iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: var(--bg);
+}
+
+/* ===================== LOADING OVERLAY ===================== */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: opacity 0.3s ease;
+}
+.loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-label {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+/* ===================== QUICK-NAV OVERLAY ===================== */
+.quicknav {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.quicknav.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.quicknav-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(7,12,24,.85);
+  backdrop-filter: blur(6px);
+}
+.quicknav-panel {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 8px;
+  width: 520px;
+  max-width: calc(100vw - 48px);
+  box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 8px 16px rgba(0,0,0,.4), 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(57,255,132,.1), inset 0 1px 0 rgba(255,255,255,.04);
+  transform: scale(.96) translateY(-8px);
+  transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+}
+.quicknav.open .quicknav-panel { transform: scale(1) translateY(0); }
+.qn-header {
+  padding: 12px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.qn-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.qn-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 4px;
+}
+.qn-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+.qn-item:hover { background: var(--bg-elevated); }
+.qn-item:active { transform: scale(0.98); background: var(--bg-elevated); }
+.qn-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 8px; }
+.qn-item.active-page { background: var(--bg-elevated); }
+.qn-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.badge-overview { background: rgba(57,255,132,.12); color: var(--accent); }
+.badge-arch     { background: rgba(56,189,248,.12); color: var(--accent-2); }
+.badge-action   { background: rgba(251,191,36,.12); color: var(--accent-3); }
+.badge-dict     { background: rgba(167,139,250,.12); color: var(--accent-5); }
+
+.qn-text {}
+.qn-text-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.qn-text-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.qn-arrow {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 16px;
+}
+.qn-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  display: flex;
+  gap: 16px;
+}
+.qn-footer kbd {
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
+}
+
+/* ===================== MOBILE TOGGLE ===================== */
+.mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 30;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(7,12,24,.7);
+  z-index: 19;
+}
+
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-w);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 25;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .mobile-toggle { display: flex; }
+  .topbar { padding-left: 56px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile hamburger -->
+<button class="mobile-toggle" id="mobile-toggle" aria-label="Open navigation">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+    <line x1="2" y1="5" x2="14" y2="5"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="11" x2="14" y2="11"/>
+  </svg>
+</button>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="shell">
+
+  <!-- ============== SIDEBAR ============== -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+      <div class="brand-eyebrow">Knowledge Base · Singapore InvoiceNow</div>
+      <div class="brand-title">Federated Analytics <span class="hi">Mesh</span></div>
+      <div class="brand-sub">FAM — Privacy-preserving analytics across dex Data Providers</div>
+    </div>
+
+    <div class="meta-strip">
+      <div class="meta-row">
+        <span class="meta-key">Jurisdiction</span>
+        <span class="meta-val">Singapore · IMDA · IRAS · MAS</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-key">Status</span>
+        <span class="meta-val live"><span class="dot-live"></span>Apr 2026</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-key">Architecture</span>
+        <span class="meta-val">B-1.a · FAM</span>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-section-label">Documents</div>
+
+      <!-- 01 Overview -->
+      <button class="nav-item active" data-page="overview">
+        <div class="nav-item-bar"></div>
+        <div class="nav-item-content">
+          <div class="nav-item-tag">01 — Overview</div>
+          <div class="nav-item-title">Executive Infographic</div>
+          <div class="nav-item-desc">High-level blueprint · PET layers · use cases · roadmap · constraints</div>
+        </div>
+      </button>
+      <div class="nav-sub">
+        <button class="nav-sub-link" data-scroll="shift">4-Corner → 5-Corner shift</button>
+        <button class="nav-sub-link" data-scroll="arch-diagram">Architecture diagram</button>
+        <button class="nav-sub-link" data-scroll="pet-stack">PET stack</button>
+        <button class="nav-sub-link" data-scroll="roadmap">GST InvoiceNow roadmap</button>
+      </div>
+
+      <!-- 02 Architecture -->
+      <button class="nav-item" data-page="architecture">
+        <div class="nav-item-bar"></div>
+        <div class="nav-item-content">
+          <div class="nav-item-tag">02 — Deep Dive</div>
+          <div class="nav-item-title">Architecture Deep-Dive</div>
+          <div class="nav-item-desc">Component anatomy · sequence flows · protocol stack · threat model</div>
+        </div>
+      </button>
+      <div class="nav-sub">
+        <button class="nav-sub-link" data-anchor="design">Design invariants</button>
+        <button class="nav-sub-link" data-anchor="anatomy">Component anatomy</button>
+        <button class="nav-sub-link" data-anchor="dex-integration">dex integration points</button>
+        <button class="nav-sub-link" data-anchor="flows">Sequence diagrams (F0–F6)</button>
+        <button class="nav-sub-link" data-anchor="examples">Worked examples</button>
+        <button class="nav-sub-link" data-anchor="stack">Protocol stack</button>
+        <button class="nav-sub-link" data-anchor="discovery">ASR discovery</button>
+        <button class="nav-sub-link" data-anchor="threat">Threat model</button>
+        <button class="nav-sub-link" data-anchor="resilience">Failure modes</button>
+      </div>
+
+      <!-- 03 In Action -->
+      <button class="nav-item" data-page="action">
+        <div class="nav-item-bar"></div>
+        <div class="nav-item-content">
+          <div class="nav-item-tag">03 — In Action</div>
+          <div class="nav-item-title">Mesh in Action</div>
+          <div class="nav-item-desc">Interactive walk-through · Use Case A (financing) · Use Case B (MAS cross-bank FL)</div>
+        </div>
+      </button>
+      <div class="nav-sub">
+        <button class="nav-sub-link" data-scenario="A">Use Case A — Invoice Financing</button>
+        <button class="nav-sub-link" data-scenario="B">Use Case B — MAS Cross-Bank FL</button>
+      </div>
+
+      <!-- 04 Dictionary -->
+      <button class="nav-item" data-page="dictionary">
+        <div class="nav-item-bar"></div>
+        <div class="nav-item-content">
+          <div class="nav-item-tag">04 — Reference</div>
+          <div class="nav-item-title">Data Dictionary</div>
+          <div class="nav-item-desc">80 terms · 8 categories · acronyms, protocols, standards, institutions</div>
+        </div>
+      </button>
+      <div class="nav-sub">
+        <button class="nav-sub-link" data-dict-cat="peppol">PEPPOL Network</button>
+        <button class="nav-sub-link" data-dict-cat="pet">Privacy-Enhancing Technologies</button>
+        <button class="nav-sub-link" data-dict-cat="crypto">Cryptography</button>
+        <button class="nav-sub-link" data-dict-cat="infra">Infrastructure &amp; Computing</button>
+        <button class="nav-sub-link" data-dict-cat="govt">Governance &amp; Regulation</button>
+        <button class="nav-sub-link" data-dict-cat="finance">Finance &amp; Trade</button>
+        <button class="nav-sub-link" data-dict-cat="protocols">Protocols &amp; Standards</button>
+        <button class="nav-sub-link" data-dict-cat="data">Data Architecture</button>
+      </div>
+
+      <div class="nav-divider"></div>
+      <div class="nav-section-label">Reading Progress</div>
+      <div class="nav-progress">
+        <div class="np-label">
+          <span id="progress-label">1 of 3 pages</span>
+          <span id="progress-pct">33%</span>
+        </div>
+        <div class="np-bar"><div class="np-fill" id="progress-fill" style="width:33%"></div></div>
+      </div>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sf-row">
+        <span class="sf-label">Navigate pages</span>
+        <div class="sf-btns">
+          <button class="sf-btn" id="sf-prev" title="Previous page" disabled>
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M9 11L5 7l4-4"/>
+            </svg>
+          </button>
+          <button class="sf-btn" id="sf-next" title="Next page">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M5 3l4 4-4 4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="kbd-hint">
+        <kbd>⌘K</kbd><span>quick nav</span>
+        <kbd>←</kbd><kbd>→</kbd><span>pages</span>
+        <kbd>1</kbd><kbd>–</kbd><kbd>4</kbd><span>jump</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============== MAIN ============== -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar" id="topbar">
+      <div class="topbar-breadcrumb">
+        <span>Federated Analytics Mesh (FAM)</span>
+        <span class="sep">/</span>
+        <span class="page-tag tag-overview" id="tb-tag">OVERVIEW</span>
+        <span class="page-name" id="tb-name">Executive Infographic</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btn-quicknav">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="5" cy="5" r="3.5"/><line x1="7.8" y1="7.8" x2="11" y2="11"/>
+          </svg>
+          Quick nav
+        </button>
+        <button class="topbar-btn" id="btn-new-tab">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="1" width="8" height="8" rx="1.5"/>
+            <path d="M5 7V3M3 5h4"/>
+          </svg>
+          Open in tab
+        </button>
+        <div class="pager">
+          <button class="pager-btn" id="tb-prev" disabled title="Previous (← key)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M9 11L5 7l4-4"/>
+            </svg>
+          </button>
+          <button class="pager-btn" id="tb-next" title="Next (→ key)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M5 3l4 4-4 4"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frame container -->
+    <div class="frame-container" id="frame-container">
+
+      <div class="frame-panel active" id="panel-overview">
+        <div class="loading-overlay" id="load-overview">
+          <div class="loading-inner">
+            <div class="loading-spinner"></div>
+            <div class="loading-label">Loading overview…</div>
+          </div>
+        </div>
+        <iframe id="iframe-overview"
+                title="Executive Infographic"></iframe>
+      </div>
+
+      <div class="frame-panel" id="panel-architecture">
+        <div class="loading-overlay" id="load-architecture">
+          <div class="loading-inner">
+            <div class="loading-spinner"></div>
+            <div class="loading-label">Loading architecture deep-dive…</div>
+          </div>
+        </div>
+        <iframe id="iframe-architecture"
+                title="Architecture Deep-Dive"></iframe>
+      </div>
+
+      <div class="frame-panel" id="panel-action">
+        <div class="loading-overlay" id="load-action">
+          <div class="loading-inner">
+            <div class="loading-spinner"></div>
+            <div class="loading-label">Loading mesh in action…</div>
+          </div>
+        </div>
+        <iframe id="iframe-action"
+                title="Mesh in Action"></iframe>
+      </div>
+
+      <div class="frame-panel" id="panel-dictionary">
+        <div class="loading-overlay" id="load-dictionary">
+          <div class="loading-inner">
+            <div class="loading-spinner"></div>
+            <div class="loading-label">Loading data dictionary…</div>
+          </div>
+        </div>
+        <iframe id="iframe-dictionary"
+                title="Data Dictionary"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ============== QUICK NAV OVERLAY ============== -->
+<div class="quicknav" id="quicknav">
+  <div class="quicknav-backdrop" id="qn-backdrop"></div>
+  <div class="quicknav-panel">
+    <div class="qn-header">
+      <span class="qn-title">Navigate — Federated Analytics Mesh (FAM)</span>
+      <button class="qn-close" id="qn-close">×</button>
+    </div>
+
+    <button class="qn-item active-page" data-page="overview">
+      <div class="qn-badge badge-overview">01</div>
+      <div class="qn-text">
+        <div class="qn-text-title">Executive Infographic</div>
+        <div class="qn-text-desc">High-level blueprint · PET layers · use cases · roadmap · constraints</div>
+      </div>
+      <span class="qn-arrow">→</span>
+    </button>
+
+    <button class="qn-item" data-page="architecture">
+      <div class="qn-badge badge-arch">02</div>
+      <div class="qn-text">
+        <div class="qn-text-title">Architecture Deep-Dive</div>
+        <div class="qn-text-desc">Component anatomy · sequence diagrams · threat model · resilience</div>
+      </div>
+      <span class="qn-arrow">→</span>
+    </button>
+
+    <button class="qn-item" data-page="action">
+      <div class="qn-badge badge-action">03</div>
+      <div class="qn-text">
+        <div class="qn-text-title">Mesh in Action</div>
+        <div class="qn-text-desc">Interactive walk-through · Use Case A · Use Case B</div>
+      </div>
+      <span class="qn-arrow">→</span>
+    </button>
+
+    <button class="qn-item" data-page="dictionary">
+      <div class="qn-badge badge-dict">04</div>
+      <div class="qn-text">
+        <div class="qn-text-title">Data Dictionary</div>
+        <div class="qn-text-desc">80 terms · acronyms, protocols, standards, institutions</div>
+      </div>
+      <span class="qn-arrow">→</span>
+    </button>
+
+    <div class="qn-footer">
+      <span><kbd>↑</kbd><kbd>↓</kbd> select</span>
+      <span><kbd>Enter</kbd> open</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// PAGES DATA
+// =====================================================================
+// Iframes point to the migrated React app (Vite dev server on port 5173).
+// `?embed=1` tells the React app to hide its top nav bar when shown inside this wiki.
+const REACT_APP_BASE = 'http://localhost:5173';
+const PAGES = [
+  {
+    id: 'overview',
+    title: 'Executive Infographic',
+    tag: 'OVERVIEW',
+    tagClass: 'tag-overview',
+    file: REACT_APP_BASE + '/5th-corner?embed=1'
+  },
+  {
+    id: 'architecture',
+    title: 'Architecture Deep-Dive',
+    tag: 'DEEP DIVE',
+    tagClass: 'tag-arch',
+    file: REACT_APP_BASE + '/architecture?embed=1'
+  },
+  {
+    id: 'action',
+    title: 'Mesh in Action',
+    tag: 'IN ACTION',
+    tagClass: 'tag-action',
+    file: REACT_APP_BASE + '/in-action?embed=1'
+  },
+  {
+    id: 'dictionary',
+    title: 'Data Dictionary',
+    tag: 'REFERENCE',
+    tagClass: 'tag-dict',
+    file: REACT_APP_BASE + '/data-dictionary?embed=1'
+  }
+];
+
+let currentIdx = 0;
+let iframesLoaded = {}; // track which iframes have already fully loaded
+
+// =====================================================================
+// NAVIGATION CORE
+// =====================================================================
+function navigateTo(pageId, opts = {}) {
+  const newIdx = PAGES.findIndex(p => p.id === pageId);
+  if (newIdx === -1 || newIdx === currentIdx) {
+    if (opts.closeQuicknav) closeQuicknav();
+    return;
+  }
+
+  const prevIdx = currentIdx;
+  currentIdx = newIdx;
+
+  // Close quicknav / mobile sidebar if open
+  if (opts.closeQuicknav) closeQuicknav();
+  closeMobileSidebar();
+
+  // Panel transition
+  const prevPanel = document.getElementById('panel-' + PAGES[prevIdx].id);
+  const nextPanel = document.getElementById('panel-' + PAGES[newIdx].id);
+
+  // Direction: going forward or back?
+  const goingForward = newIdx > prevIdx;
+  prevPanel.classList.remove('active');
+  if (goingForward) prevPanel.classList.add('exit-left');
+  // Reset after transition (removing active already triggers CSS exit-right for backward)
+  setTimeout(() => {
+    prevPanel.classList.remove('exit-left');
+    prevPanel.style.transform = '';
+  }, 320);
+
+  nextPanel.style.transform = goingForward ? 'translateX(24px)' : 'translateX(-24px)';
+  // Force reflow
+  nextPanel.getBoundingClientRect();
+  nextPanel.classList.add('active');
+  nextPanel.style.transform = '';
+
+  updateChrome();
+
+  // Ensure iframe content is still alive (browser may GC hidden iframes)
+  const targetPage = PAGES[newIdx];
+  const targetIframe = document.getElementById('iframe-' + targetPage.id);
+  const targetLoader = document.getElementById('load-' + targetPage.id);
+  if (iframesLoaded[targetPage.id]) {
+    try {
+      const cdoc = targetIframe.contentDocument;
+      if (!cdoc || !cdoc.body || cdoc.body.children.length === 0) {
+        iframesLoaded[targetPage.id] = false;
+        targetLoader.classList.remove('hidden');
+        targetIframe.src = targetPage.file;
+      }
+    } catch(e) {}
+  } else {
+    // Not yet loaded — make sure loader is visible
+    targetLoader.classList.remove('hidden');
+  }
+
+  // Any sub-actions (anchor, scenario)
+  if (opts.anchor) {
+    scheduleIframeAction(pageId, () => scrollIframeToAnchor(pageId, opts.anchor));
+  }
+  if (opts.scenario) {
+    scheduleIframeAction(pageId, () => setIframeScenario(pageId, opts.scenario));
+  }
+}
+
+function scheduleIframeAction(pageId, fn) {
+  const iframe = document.getElementById('iframe-' + pageId);
+  if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+    fn();
+  } else {
+    iframe.addEventListener('load', fn, { once: true });
+  }
+}
+
+function scrollIframeToAnchor(pageId, anchor) {
+  try {
+    const iframe = document.getElementById('iframe-' + pageId);
+    const el = iframe.contentDocument.getElementById(anchor);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {}
+}
+
+function setIframeScenario(pageId, scenario) {
+  try {
+    const iframe = document.getElementById('iframe-' + pageId);
+    const iWin = iframe.contentWindow;
+    if (!iWin || !iWin.state) return;
+    iWin.state.scenario = scenario;
+    iWin.state.step = 0;
+    if (typeof iWin.render === 'function') iWin.render();
+    if (typeof iWin.stopAutoplay === 'function') iWin.stopAutoplay();
+  } catch(e) {}
+}
+
+// =====================================================================
+// CHROME UPDATES
+// =====================================================================
+function updateChrome() {
+  const page = PAGES[currentIdx];
+
+  // Topbar
+  const tbTag = document.getElementById('tb-tag');
+  tbTag.textContent = page.tag;
+  tbTag.className = 'page-tag ' + page.tagClass;
+  document.getElementById('tb-name').textContent = page.title;
+
+  // Prev/next buttons
+  const isFirst = currentIdx === 0;
+  const isLast  = currentIdx === PAGES.length - 1;
+  document.getElementById('tb-prev').disabled = isFirst;
+  document.getElementById('tb-next').disabled = isLast;
+  document.getElementById('sf-prev').disabled = isFirst;
+  document.getElementById('sf-next').disabled = isLast;
+
+  // Sidebar nav items
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page.id);
+  });
+
+  // Progress bar
+  const pct = Math.round(((currentIdx + 1) / PAGES.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-label').textContent = (currentIdx + 1) + ' of ' + PAGES.length + ' pages';
+
+  // Quicknav highlight
+  document.querySelectorAll('.qn-item').forEach(el => {
+    el.classList.toggle('active-page', el.dataset.page === page.id);
+  });
+}
+
+// =====================================================================
+// IFRAME LOAD TRACKING
+// =====================================================================
+PAGES.forEach(page => {
+  const iframe = document.getElementById('iframe-' + page.id);
+  const loader = document.getElementById('load-' + page.id);
+  iframe.addEventListener('load', () => {
+    iframesLoaded[page.id] = true;
+    loader.classList.add('hidden');
+    // Inject base navigation CSS into every iframe to add a discreet banner
+    try {
+      const iDoc = iframe.contentDocument;
+      if (iDoc) {
+        const style = iDoc.createElement('style');
+        style.textContent = `
+          body { padding-bottom: 0 !important; }
+        `;
+        iDoc.head.appendChild(style);
+      }
+    } catch(e) {}
+  });
+  iframe.src = page.file;
+});
+
+// =====================================================================
+// EVENT WIRING — sidebar nav items
+// =====================================================================
+document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+});
+
+// Sub-nav links with anchor
+document.querySelectorAll('.nav-sub-link[data-anchor]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const pageId = btn.closest('.nav-sub').previousElementSibling.dataset.page;
+    navigateTo(pageId, { anchor: btn.dataset.anchor });
+  });
+});
+
+// Sub-nav scenario links
+document.querySelectorAll('.nav-sub-link[data-scenario]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigateTo('action', { scenario: btn.dataset.scenario });
+  });
+});
+
+// Sub-nav dictionary category filter links
+document.querySelectorAll('.nav-sub-link[data-dict-cat]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigateTo('dictionary');
+    scheduleIframeAction('dictionary', () => {
+      try {
+        const iframe = document.getElementById('iframe-dictionary');
+        const iWin = iframe.contentWindow;
+        // Click the matching filter button inside the dictionary iframe
+        const filterBtn = iWin.document.querySelector(`.filter-btn[data-cat="${btn.dataset.dictCat}"]`);
+        if (filterBtn) filterBtn.click();
+      } catch(e) {}
+    });
+  });
+});
+
+// Sub-nav scroll links (overview internal sections — scroll within iframe)
+document.querySelectorAll('.nav-sub-link[data-scroll]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigateTo('overview');
+    // overview has no JS anchors, scroll to approximate position
+    const scrollMap = {
+      'shift': 600,
+      'arch-diagram': 1200,
+      'pet-stack': 1900,
+      'roadmap': 2700
+    };
+    setTimeout(() => {
+      try {
+        const iframe = document.getElementById('iframe-overview');
+        const scrollY = scrollMap[btn.dataset.scroll] || 0;
+        iframe.contentWindow.scrollTo({ top: scrollY, behavior: 'smooth' });
+      } catch(e) {}
+    }, 400);
+  });
+});
+
+// Prev/next buttons
+document.getElementById('tb-prev').addEventListener('click', () => {
+  if (currentIdx > 0) navigateTo(PAGES[currentIdx - 1].id);
+});
+document.getElementById('tb-next').addEventListener('click', () => {
+  if (currentIdx < PAGES.length - 1) navigateTo(PAGES[currentIdx + 1].id);
+});
+document.getElementById('sf-prev').addEventListener('click', () => {
+  if (currentIdx > 0) navigateTo(PAGES[currentIdx - 1].id);
+});
+document.getElementById('sf-next').addEventListener('click', () => {
+  if (currentIdx < PAGES.length - 1) navigateTo(PAGES[currentIdx + 1].id);
+});
+
+// =====================================================================
+// QUICK NAV
+// =====================================================================
+function openQuicknav() {
+  document.getElementById('quicknav').classList.add('open');
+}
+function closeQuicknav() {
+  document.getElementById('quicknav').classList.remove('open');
+}
+document.getElementById('btn-quicknav').addEventListener('click', openQuicknav);
+document.getElementById('qn-close').addEventListener('click', closeQuicknav);
+document.getElementById('qn-backdrop').addEventListener('click', closeQuicknav);
+document.querySelectorAll('.qn-item[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigateTo(btn.dataset.page, { closeQuicknav: true });
+  });
+});
+
+// Open-in-tab
+document.getElementById('btn-new-tab').addEventListener('click', () => {
+  window.open(PAGES[currentIdx].file, '_blank');
+});
+
+// =====================================================================
+// KEYBOARD SHORTCUTS
+// =====================================================================
+document.addEventListener('keydown', e => {
+  // Guard: don't intercept if focus is inside an iframe or input
+  const active = document.activeElement;
+  if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+
+  // ⌘K or Ctrl+K — quick nav
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    if (document.getElementById('quicknav').classList.contains('open')) {
+      closeQuicknav();
+    } else {
+      openQuicknav();
+    }
+    return;
+  }
+
+  if (document.getElementById('quicknav').classList.contains('open')) {
+    if (e.key === 'Escape') closeQuicknav();
+    return; // Don't handle other keys when quicknav open
+  }
+
+  // Left/right arrow keys for page navigation
+  if (e.key === 'ArrowRight' && !e.altKey) {
+    if (currentIdx < PAGES.length - 1) navigateTo(PAGES[currentIdx + 1].id);
+  }
+  if (e.key === 'ArrowLeft' && !e.altKey) {
+    if (currentIdx > 0) navigateTo(PAGES[currentIdx - 1].id);
+  }
+
+  // 1/2/3/4 shortcut keys
+  if (e.key === '1') navigateTo('overview');
+  if (e.key === '2') navigateTo('architecture');
+  if (e.key === '3') navigateTo('action');
+  if (e.key === '4') navigateTo('dictionary');
+});
+
+// =====================================================================
+// MOBILE SIDEBAR
+// =====================================================================
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+document.getElementById('mobile-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+});
+document.getElementById('sidebar-overlay').addEventListener('click', closeMobileSidebar);
+
+// =====================================================================
+// INIT
+// =====================================================================
+updateChrome();
+</script>
+
+</body>
+</html>
