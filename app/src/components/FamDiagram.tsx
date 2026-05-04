@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -30,7 +30,6 @@ import { DashedEdge, DottedEdge } from './edges/DashedEdge'
 import AnimatedEdge from './edges/AnimatedEdge'
 import StraightEdge from './edges/StraightEdge'
 import CurvedEdge from './edges/CurvedEdge'
-import { BASE_NODES, BASE_EDGES } from '../data/famDiagram'
 import DiagramToolbar, { computeEdgeType } from './DiagramToolbar'
 import { useFamData, type DiagramData } from '../hooks/useFamData'
 import { useVersionStore } from '../hooks/useVersionStore'
@@ -294,7 +293,7 @@ export default function FamDiagram({
 
   const edgeBeingReconnected = useRef<Edge | null>(null)
 
-  const handleReconnectStart = useCallback((_: MouseEvent | TouchEvent, edge: Edge) => {
+  const handleReconnectStart = useCallback((_: React.MouseEvent<Element, MouseEvent>, edge: Edge) => {
     edgeBeingReconnected.current = edge
   }, [])
 
@@ -335,7 +334,7 @@ export default function FamDiagram({
 
   // ── Drag stop ─────────────────────────────────────────────────────────────
 
-  const onNodeDragStop = useCallback((_: MouseEvent, node: Node) => {
+  const onNodeDragStop = useCallback((_: React.MouseEvent<Element, MouseEvent>, node: Node) => {
     const updated = nodes.map(n => n.id === node.id ? { ...n, position: node.position } : n)
     // Re-route non-static edges touching the moved node around obstacles
     const reroutedEdges = edges.map(e => {

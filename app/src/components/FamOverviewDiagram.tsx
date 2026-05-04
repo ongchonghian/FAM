@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -226,7 +226,7 @@ export default function FamOverviewDiagram({
   const rfInstance = useRef<ReactFlowInstance | null>(null)
   const addNodeOffset = useRef(0)
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(() => {
+  const initialNodes: Node[] = (() => {
     const baseNodes = NODES.map(node => {
       const saved = savedPositions[node.id]
       const w = saved?.width
@@ -264,8 +264,9 @@ export default function FamOverviewDiagram({
       }
     })
     return [...baseNodes, ...userNodes]
-  })
-  const [edges, setEdges, onEdgesChange] = useEdgesState(() => savedEdges ?? EDGES)
+  })()
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(savedEdges ?? EDGES)
 
   // Capture initial state once on mount
   const initialCaptured = useRef(false)
@@ -442,7 +443,7 @@ export default function FamOverviewDiagram({
 
   const edgeBeingReconnected = useRef<Edge | null>(null)
 
-  const handleReconnectStart = useCallback((_: MouseEvent | TouchEvent, edge: Edge) => {
+  const handleReconnectStart = useCallback((_: React.MouseEvent<Element, MouseEvent>, edge: Edge) => {
     edgeBeingReconnected.current = edge
   }, [])
 
@@ -483,7 +484,7 @@ export default function FamOverviewDiagram({
 
   // ── Drag stop ─────────────────────────────────────────────────────────────
 
-  const onNodeDragStop = useCallback((_: MouseEvent, node: Node) => {
+  const onNodeDragStop = useCallback((_: React.MouseEvent<Element, MouseEvent>, node: Node) => {
     const updated = nodes.map(n => n.id === node.id ? { ...n, position: node.position } : n)
     // Re-route non-static edges touching the moved node around obstacles
     const reroutedEdges = edges.map(e => {

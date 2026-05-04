@@ -259,22 +259,6 @@ function Sep() {
   return <div style={{ width: 1, height: 18, background: 'rgba(61,74,115,0.6)', margin: '0 2px', flexShrink: 0 }} />
 }
 
-function ExpandIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 2h4v4M6 14H2v-4M14 2l-5 5M2 14l5-5" />
-    </svg>
-  )
-}
-
-function CollapseIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 6h-4V2M2 10h4v4M10 6l-5 5M6 10l5-5" />
-    </svg>
-  )
-}
-
 function ActiveDotIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
