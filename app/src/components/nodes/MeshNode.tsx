@@ -1,4 +1,4 @@
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, NodeResizer } from '@xyflow/react'
 
 export interface MeshNodeData {
   label: string
@@ -10,7 +10,7 @@ export interface MeshNodeData {
   initialDim?: boolean
 }
 
-export default function MeshNode({ data }: { data: MeshNodeData }) {
+export default function MeshNode({ data, selected }: { data: MeshNodeData; selected?: boolean }) {
   const { label, sublabel, meta, color, isActive, isDim, initialDim } = data
   const dim = isDim ?? initialDim ?? false
 
@@ -34,9 +34,10 @@ export default function MeshNode({ data }: { data: MeshNodeData }) {
         position: 'relative',
       }}
     >
-      <Handle type="target" position={Position.Top} id="top" />
+      <NodeResizer isVisible={selected} minWidth={60} minHeight={30} color="#39ff84" />
+      <Handle type="source" position={Position.Top} id="top" />
       <Handle type="source" position={Position.Bottom} id="bottom" />
-      <Handle type="target" position={Position.Left} id="left" />
+      <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Right} id="right" />
 
       <span style={{

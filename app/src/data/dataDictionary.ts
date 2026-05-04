@@ -571,16 +571,6 @@ export const TERMS: Term[] = [
     def: "The sandboxed runtime for executing smart contracts on Ethereum and EVM-compatible chains (Polygon, XDC, Besu). Relevant to the mesh's DLT anchoring layer where smart contracts optionally manage Signed Tree Head registration.",
     seeAlso: ['DLT', 'XDC', 'Polygon'],
   },
-  {
-    term: 'Wallet',
-    full: 'Digital Credential Wallet',
-    cat: 'infra',
-    def: "Software (mobile, desktop or server-side) that stores a holder's Verifiable Credentials, manages their cryptographic keys, and assembles Verifiable Presentations on demand under the holder's control.",
-    biz: "Where a business keeps its digital credentials — its tax registration, its proof of trade volumes, its receivables attestations. The business decides what to share and with whom; nothing leaves the wallet without consent.",
-    analogy: "Like a physical wallet holding your ID, driver's licence and credit cards — you choose which to show and to whom.",
-    relevance: 'This is where Acme stores the VC issued by ASE-1 and from which it builds the proof presented to DBS.',
-    seeAlso: ['VC', 'VP', 'DID'],
-  },
 
   // ====== GOVERNANCE & REGULATION ======
   {
@@ -840,9 +830,9 @@ export const TERMS: Term[] = [
     full: 'DIF Presentation Exchange Definition',
     cat: 'protocols',
     def: 'A JSON document, defined by the DIF Presentation Exchange specification, that expresses what a verifier requires from a holder — which credential types, which fields, which formats and which constraints.',
-    biz: 'A structured shopping list a verifier sends to a supplier saying "to prove your case, please show me these specific facts." The supplier\'s wallet reads it and assembles only what was asked for.',
+    biz: 'A structured request a verifier sends saying "to prove your case, show me these specific facts." In the FAM, DBS sends this to the Broker; the Broker routes it to the relevant ASE, which computes and returns only the matching proofs.',
     analogy: "Like a visa application form — the embassy lists exactly which documents to submit; you don't hand over your whole filing cabinet.",
-    relevance: 'This is the artefact DBS sends to Acme in Step 2 — the formal request for proof of receivables, expressed in a standard format.',
+    relevance: 'This is the artefact DBS sends to the Broker in Step 2 — the formal request for proof of receivables, expressed in a standard format.',
     seeAlso: ['DIF', 'VP', 'VC'],
   },
   {

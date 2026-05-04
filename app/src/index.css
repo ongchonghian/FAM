@@ -55,6 +55,70 @@ html, body, #root {
   background: transparent; border: none;
   pointer-events: none;
 }
+
+/* ── Edit mode: edges selectable via wide interaction path ── */
+.diagram-edit-mode .react-flow__edge-interaction,
+.diagram-author-mode .react-flow__edge-interaction {
+  pointer-events: stroke;
+}
+/* Show flow-hidden/static edges at dim opacity so they can be selected */
+.diagram-edit-mode .react-flow__edge.flow-hidden .react-flow__edge-path,
+.diagram-author-mode .react-flow__edge.flow-static .react-flow__edge-path,
+.diagram-author-mode .react-flow__edge.flow-hidden .react-flow__edge-path {
+  opacity: 0.2 !important;
+}
+/* Selected edge: bright white glow so selection is visible regardless of edge colour */
+.diagram-edit-mode .react-flow__edge.selected .react-flow__edge-path,
+.diagram-author-mode .react-flow__edge.selected .react-flow__edge-path {
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,0.85));
+  opacity: 1 !important;
+}
+
+/* ── Edit mode: edge reconnect anchors ── */
+/* Hidden on all edges by default; only revealed on the selected edge */
+.diagram-edit-mode .react-flow__edgeupdater {
+  fill: transparent;
+  stroke: transparent;
+}
+.diagram-edit-mode .react-flow__edge.selected .react-flow__edgeupdater {
+  fill: var(--bg-deep);
+  stroke: #ffffff;
+  stroke-width: 2;
+  r: 10;
+  cursor: crosshair;
+}
+.diagram-edit-mode .react-flow__edge.selected .react-flow__edgeupdater:hover,
+.diagram-edit-mode .react-flow__edge.updating .react-flow__edgeupdater {
+  fill: var(--accent);
+  stroke: var(--accent);
+  r: 12;
+  filter: drop-shadow(0 0 4px var(--accent));
+}
+
+/* ── Edit mode: handles become visible and interactive ── */
+.diagram-edit-mode .react-flow__handle {
+  width: 9px; height: 9px;
+  min-width: 9px; min-height: 9px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  pointer-events: all;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.diagram-edit-mode .react-flow__node:hover .react-flow__handle {
+  border-color: var(--accent);
+  opacity: 0.8;
+}
+.diagram-edit-mode .react-flow__handle:hover,
+.diagram-edit-mode .react-flow__handle.connectionindicator {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.55);
+  box-shadow: 0 0 8px var(--accent);
+  opacity: 1;
+}
 .react-flow__attribution { display: none; }
 
 @keyframes flowDash {
@@ -124,14 +188,55 @@ h1.title .accent { color: var(--accent); }
 .step-num { font-size: 12px; font-family: var(--mono); color: var(--text-dim); letter-spacing: 0.1em; }
 .step-pill.active .step-num { color: var(--accent); }
 .step-name { font-weight: 500; line-height: 1.3; }
+.step-dirty-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-3); flex-shrink: 0; margin-left: 4px; align-self: center;
+}
 
-/* ── Three-column scene ── */
-.scene-columns {
-  display: grid;
-  grid-template-columns: var(--sidebar-left-w, 300px) 1fr var(--sidebar-right-w, 300px);
-  gap: 0; height: 520px;
+/* ── Draft save bar ── */
+.draft-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 14px;
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border-strong);
+  z-index: 100;
+}
+.draft-bar-info {
+  font-size: 12px; font-family: var(--mono);
+  color: var(--text-muted); letter-spacing: 0.06em; line-height: 1.4;
+}
+.draft-bar-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ── Diagram layout: left col (steps + narration) + diagram ── */
+.diagram-layout {
+  display: grid; grid-template-columns: 300px 1fr; gap: 0;
+  height: clamp(700px, 85vh, 1060px);
   border: 1px solid var(--border); border-radius: 12px;
   overflow: hidden; background: var(--bg-card);
+  margin-bottom: 12px;
+}
+
+.diagram-left {
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--border); overflow: hidden;
+}
+
+.diagram-narration {
+  display: flex; flex-direction: column; flex: 1; overflow: hidden;
+}
+.diagram-narration .sidebar-body { overflow-y: auto; flex: 1; min-height: 0; }
+
+.diagram-frame {
+  width: 100%; height: 100%; overflow: hidden; background: var(--bg-deep);
+}
+
+/* ── Payload panel ── */
+.payload-panel {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; height: clamp(260px, 30vh, 380px);
+  background: var(--bg-card);
 }
 
 /* ── Sidebar ── */
@@ -292,10 +397,188 @@ h1.title .accent { color: var(--accent); }
   border-radius: 0; overflow: hidden; background: var(--bg-deep);
 }
 
+/* ── Diagram toolbar ── */
+.diagram-toolbar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.diagram-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.diagram-toolbar .btn {
+  padding: 6px 11px;
+  font-size: 13px;
+  background: rgba(15, 22, 38, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.diagram-toolbar .btn.icon-btn { padding: 6px 8px; }
+.diagram-toolbar .btn:hover { background: rgba(15, 22, 38, 1); }
+.diagram-toolbar .btn.primary { background: rgba(57, 255, 132, 0.1); }
+.diagram-toolbar .btn.saved { color: var(--accent); border-color: var(--accent); background: rgba(57, 255, 132, 0.12); }
+.diagram-toolbar .btn.reset-muted { color: var(--text-dim); font-size: 12px; padding: 5px 9px; }
+.diagram-toolbar .btn.reset-muted:hover { color: var(--danger); border-color: var(--danger); }
+.diagram-toolbar .btn:disabled:hover { background: rgba(15, 22, 38, 0.92); border-color: var(--border); }
+.diagram-toolbar .btn.danger { color: var(--danger); border-color: var(--danger); background: rgba(239,68,68,0.08); }
+.diagram-toolbar .btn.danger:hover { background: rgba(239,68,68,0.18); }
+
+/* ── Layout type select (inside toolbar) ── */
+.layout-type-select {
+  padding: 0 8px;
+  height: 30px;
+  background: rgba(15, 22, 38, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+.layout-type-select:hover { border-color: var(--border-strong); color: var(--text); }
+.layout-type-select:focus { border-color: var(--accent-5); }
+.layout-type-select option { background: #111827; color: var(--text); }
+
+/* ── Add node dropdown menu ── */
+.add-node-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 100;
+  background: rgba(15, 22, 38, 0.98);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 4px;
+  min-width: 148px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.add-node-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: left;
+  transition: background 0.12s;
+}
+.add-node-menu-item:hover { background: rgba(61,74,115,0.45); }
+.add-node-menu-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Color picker menu ── */
+.color-picker-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 100;
+  background: rgba(15, 22, 38, 0.98);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.color-presets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+.color-preset-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, border-color 0.1s, box-shadow 0.1s;
+}
+.color-preset-swatch:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 6px currentColor;
+}
+.color-preset-swatch.active {
+  border-color: rgba(255,255,255,0.85);
+  box-shadow: 0 0 6px rgba(255,255,255,0.4);
+}
+.color-custom-input {
+  width: 100%;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--bg-card);
+  padding: 2px;
+}
+.color-custom-input:hover { border-color: var(--border-strong); }
+
+/* ── Routed edge waypoint handles ── */
+.edge-waypoint-handle {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #6366f1;
+  border: 2px solid #fff;
+  cursor: move;
+  pointer-events: all;
+  box-shadow: 0 0 5px rgba(99, 102, 241, 0.7);
+  transition: background 0.12s;
+}
+.edge-waypoint-handle:hover { background: #818cf8; }
+
+.edge-waypoint-add {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1.5px dashed rgba(99, 102, 241, 0.55);
+  cursor: crosshair;
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  color: rgba(99, 102, 241, 0.7);
+  opacity: 0.45;
+  transition: opacity 0.12s, background 0.12s;
+}
+.edge-waypoint-add:hover { opacity: 1; background: rgba(99, 102, 241, 0.22); color: #818cf8; border-color: #818cf8; }
+
 @media (max-width: 980px) {
   .journey-grid { grid-template-columns: 1fr 1fr; }
-  .scene-columns { grid-template-columns: 1fr !important; }
-  .sidebar { display: none; }
+  .diagram-layout { grid-template-columns: 1fr !important; height: auto; }
+  .diagram-left { max-height: 480px; border-right: none; border-bottom: 1px solid var(--border); }
+  .diagram-frame { height: clamp(420px, 55vh, 640px); }
 }
 @media (max-width: 600px) {
   .doc { padding: 24px 14px 60px; }

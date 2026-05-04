@@ -1,4 +1,4 @@
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, NodeResizer } from '@xyflow/react'
 
 export interface ServiceNodeData {
   label: string
@@ -9,7 +9,7 @@ export interface ServiceNodeData {
   isDim?: boolean
 }
 
-export default function ServiceNode({ data }: { data: ServiceNodeData }) {
+export default function ServiceNode({ data, selected }: { data: ServiceNodeData; selected?: boolean }) {
   const { label, sublabel, meta, color, isActive, isDim } = data
 
   return (
@@ -30,9 +30,10 @@ export default function ServiceNode({ data }: { data: ServiceNodeData }) {
       boxShadow: isActive ? `0 0 12px ${color}55` : 'none',
       position: 'relative',
     }}>
-      <Handle type="target" position={Position.Top} id="top" />
+      <NodeResizer isVisible={selected} minWidth={80} minHeight={40} color="#39ff84" />
+      <Handle type="source" position={Position.Top} id="top" />
       <Handle type="source" position={Position.Bottom} id="bottom" />
-      <Handle type="target" position={Position.Left} id="left" />
+      <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Right} id="right" />
 
       <span style={{

@@ -7,8 +7,6 @@ import Wiki from './pages/Wiki'
 
 function Nav() {
   const [params] = useSearchParams()
-  // Hide the top nav when this page is embedded inside the legacy peppol-wiki shell
-  // (the wiki passes ?embed=1 on the iframe URL so its own sidebar serves as the nav).
   if (params.get('embed') === '1') return null
   return (
     <nav className="nav">

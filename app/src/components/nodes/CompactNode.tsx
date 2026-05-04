@@ -1,4 +1,4 @@
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, NodeResizer } from '@xyflow/react'
 
 export interface CompactNodeData {
   label: string
@@ -9,7 +9,7 @@ export interface CompactNodeData {
   initialDim?: boolean
 }
 
-export default function CompactNode({ data }: { data: CompactNodeData }) {
+export default function CompactNode({ data, selected }: { data: CompactNodeData; selected?: boolean }) {
   const { label, sublabel, color, isActive, isDim, initialDim } = data
   const dim = isDim ?? initialDim ?? false
 
@@ -31,9 +31,10 @@ export default function CompactNode({ data }: { data: CompactNodeData }) {
       boxShadow: isActive ? `0 0 8px ${color}44` : 'none',
       position: 'relative',
     }}>
-      <Handle type="target" position={Position.Top} id="top" />
+      <NodeResizer isVisible={selected} minWidth={60} minHeight={22} color="#39ff84" />
+      <Handle type="source" position={Position.Top} id="top" />
       <Handle type="source" position={Position.Bottom} id="bottom" />
-      <Handle type="target" position={Position.Left} id="left" />
+      <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Right} id="right" />
 
       <span style={{

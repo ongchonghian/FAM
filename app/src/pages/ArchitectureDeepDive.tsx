@@ -221,6 +221,7 @@ export default function ArchitectureDeepDive() {
           <ul className="toc-list">
             <li><span className="num">01</span><a href="#design">Design principles</a></li>
             <li><span className="num">02</span><a href="#anatomy">Component anatomy</a></li>
+            <li><span className="num">02a</span><a href="#rationale-ir-ase">IR vs per-AP ASEs</a></li>
             <li><span className="num">03</span><a href="#flows">The seven core flows</a></li>
             <li><span className="num">04</span><a href="#examples">Worked examples</a></li>
             <li><span className="num">05</span><a href="#stack">Protocol stack</a></li>
@@ -444,6 +445,164 @@ export default function ArchitectureDeepDive() {
             </tbody>
           </table>
         </div>
+      </section>
+
+      {/* §02a — DESIGN RATIONALE: IR vs PER-AP ASEs */}
+      <section id="rationale-ir-ase">
+        <div className="section-num">02a — DESIGN RATIONALE</div>
+        <h2>IR vs Per-AP ASEs — Why Both?</h2>
+        <p className="section-lede">
+          The mesh has both a centralised Invoice Repository (IR with its <a className="xref" href="#anatomy">ASE-IR</a>)
+          and a per-AP <a className="xref" href="#anatomy">ASE</a> at every Access Point. That looks redundant — both
+          hold invoice-derivative material. The redundancy is only apparent: the two layers exist for different reasons
+          and answer questions the other structurally cannot.
+        </p>
+
+        <table className="comp-table" style={{ marginBottom: 24 }}>
+          <thead>
+            <tr><th>Component</th><th>Primary function</th><th>Question it answers</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>IR</strong></td>
+              <td>Document repository — holds the full structured PEPPOL invoice payload, the cross-AP record</td>
+              <td>"What invoices exist, in full, for this data owner?"</td>
+            </tr>
+            <tr>
+              <td><strong>Per-AP ASE</strong></td>
+              <td>Real-time, local, privacy-preserving analytical endpoint over the slice of invoices that AP processed</td>
+              <td>"What proofs can be derived from invoices I processed?"</td>
+            </tr>
+            <tr>
+              <td><strong>ASE-IR</strong></td>
+              <td>Privacy-preserving analytical endpoint layered on IR's complete record</td>
+              <td>"What proofs can be derived from all of this data owner's invoices, regardless of AP history?"</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style={{ marginTop: 24, marginBottom: 12 }}>Four problems IR solves that per-AP ASEs structurally cannot</h3>
+
+        <div className="comp-card ir" style={{ marginBottom: 16 }}>
+          <div className="comp-head">
+            <div>
+              <div className="comp-id">PROBLEM 1</div>
+              <div className="comp-name">Cross-AP completeness for data owners with AP history</div>
+            </div>
+          </div>
+          <div className="comp-desc">
+            A supplier that has switched APs — or uses several APs simultaneously for different counterparties —
+            has their invoice history fragmented across multiple ASEs. A bank wanting a complete picture would need
+            to query every ASE that ever served that supplier, discover which those are (non-trivial without a central
+            registry), aggregate, and reconcile. <a className="xref" href="#anatomy">IR</a> holds the complete invoice
+            history for every data owner regardless of which AP processed each invoice.
+            <a className="xref" href="#anatomy">ASE-IR</a> gives a single query endpoint for the complete picture.
+          </div>
+        </div>
+
+        <div className="comp-card ir" style={{ marginBottom: 16 }}>
+          <div className="comp-head">
+            <div>
+              <div className="comp-id">PROBLEM 2</div>
+              <div className="comp-name">Continuity when an AP offboards</div>
+            </div>
+          </div>
+          <div className="comp-desc">
+            Per the offboarding protocol, when an AP exits the network its transparency log is frozen and its VCs must
+            be re-issued by a residual issuer — a process that creates a gap window and operational complexity. IR has
+            no equivalent offboarding problem: it retains the invoice record regardless of any single AP's operational
+            status. ASE-IR's view of a data owner's history is unaffected by AP churn.
+          </div>
+        </div>
+
+        <div className="comp-card ir" style={{ marginBottom: 16 }}>
+          <div className="comp-head">
+            <div>
+              <div className="comp-id">PROBLEM 3</div>
+              <div className="comp-name">The invoice record itself, not just derivatives</div>
+            </div>
+          </div>
+          <div className="comp-desc">
+            Per-AP ASEs hold only derivative cryptographic material — they do not hold the invoice payload. If a
+            downstream use case (IRAS statutory submission, a legal dispute, an audit that needs the original document)
+            requires the actual structured invoice, the per-AP ASE cannot serve it. IR holds the document. This is IR's
+            primary function: it is a <em>structured invoice repository</em>, not an analytical layer. The analytical
+            capability (ASE-IR) is layered on top of IR's document store.
+            See <a className="xref" href="#flow-f0">Flow F0</a> for the ingestion path.
+          </div>
+        </div>
+
+        <div className="comp-card ir" style={{ marginBottom: 16 }}>
+          <div className="comp-head">
+            <div>
+              <div className="comp-id">PROBLEM 4</div>
+              <div className="comp-name">The buyer's view</div>
+            </div>
+          </div>
+          <div className="comp-desc">
+            Per-AP ASEs are co-located with sender APs (C2). The buyer (C4) receives invoices via their own AP (C3),
+            but C3's ASE holds derivatives from the receiver AP's perspective — it knows which invoices arrived but
+            may not hold the full structured data if C3 is a thin routing AP. IR, which receives a copy from C2 at the
+            time of transmission, holds the complete invoice including every field the buyer needs for reconciliation,
+            financing of inbound payables, or audit. The buyer's analytical use cases are poorly served by the sender's
+            AP ASE.
+          </div>
+        </div>
+
+        <h3 style={{ marginTop: 24, marginBottom: 12 }}>Worked example — Acme switches APs mid-history</h3>
+
+        <div className="comp-card" style={{ marginBottom: 16 }}>
+          <div className="comp-head">
+            <div>
+              <div className="comp-id">SCENARIO</div>
+              <div className="comp-name">Acme used AP-Alpha 2023–2025, then switched to AP-Beta in 2026 · DBS wants 18 months of receivables for a credit facility</div>
+            </div>
+          </div>
+          <div className="comp-desc">
+            <p>
+              <strong>Without IR.</strong> DBS's query goes to AP-Beta's ASE — which covers 2026 invoices only. For the
+              2024–2025 invoices, AP-Alpha's ASE must still be running and accessible, AP-Alpha must still be an
+              AP-Plus operator, and DBS must know to query both. If AP-Alpha has since offboarded, its frozen log
+              contains the data but re-issuance of VCs may not be complete. The 18-month picture is incomplete or
+              operationally complex to assemble.
+            </p>
+            <p>
+              <strong>With IR.</strong> DBS's query goes to ASE-IR. IR received a copy of every invoice from both
+              AP-Alpha and AP-Beta at transmission time (<a className="xref" href="#flow-f0">Flow F0</a>). ASE-IR has a
+              complete 18-month view. DBS gets a single proof covering the full period. AP-Alpha's operational status
+              is irrelevant.
+            </p>
+          </div>
+        </div>
+
+        <h3 style={{ marginTop: 24, marginBottom: 12 }}>Summary — each component does something the others cannot</h3>
+
+        <table className="comp-table">
+          <thead>
+            <tr><th>Component</th><th>Primary function</th><th>What it answers</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>IR</strong></td>
+              <td>Structured invoice repository · complete cross-AP record · document persistence</td>
+              <td>"What invoices exist, in full, for this data owner across all time and all APs?"</td>
+            </tr>
+            <tr>
+              <td><strong>Per-AP ASE</strong></td>
+              <td>Real-time local analytical endpoint · federated resilience · non-PEPPOL data</td>
+              <td>"What PET-mediated proofs can I generate from invoices I processed?"</td>
+            </tr>
+            <tr>
+              <td><strong>ASE-IR</strong></td>
+              <td>Cross-AP aggregated analytical endpoint layered on IR's complete record</td>
+              <td>"What PET-mediated proofs can I generate from the complete invoice history?"</td>
+            </tr>
+            <tr>
+              <td><strong>Relationship</strong></td>
+              <td colSpan={2}>Complementary, not redundant — IR without per-AP ASEs collapses federated resilience and non-PEPPOL data support into a hub; per-AP ASEs without IR leave no complete record, no document repository, no cross-AP view, and a fragmentation problem for any data owner with AP history.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       {/* §02b — DEX INTEGRATION */}

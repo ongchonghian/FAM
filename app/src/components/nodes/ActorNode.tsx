@@ -1,4 +1,4 @@
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, NodeResizer } from '@xyflow/react'
 
 export interface ActorNodeData {
   label: string
@@ -8,14 +8,15 @@ export interface ActorNodeData {
   isDim?: boolean
 }
 
-export default function ActorNode({ data }: { data: ActorNodeData }) {
+export default function ActorNode({ data, selected }: { data: ActorNodeData; selected?: boolean }) {
   const { label, sublabel, color, isActive, isDim } = data
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <Handle type="target" position={Position.Top} id="top" />
+      <NodeResizer isVisible={selected} keepAspectRatio minWidth={40} minHeight={40} color="#39ff84" />
+      <Handle type="source" position={Position.Top} id="top" />
       <Handle type="source" position={Position.Bottom} id="bottom" />
-      <Handle type="target" position={Position.Left} id="left" />
+      <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Right} id="right" />
 
       <div style={{

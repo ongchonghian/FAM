@@ -276,7 +276,7 @@ export default function FifthCorner() {
           parameters. Documents stay where they were generated.
         </p>
 
-        <div className="arch-container" style={{ padding: 16 }}>
+        <div className="arch-container" style={{ padding: 0, aspectRatio: '1140/840', overflow: 'hidden' }}>
           <FamOverviewDiagram />
         </div>
       </section>
