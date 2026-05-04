@@ -25,7 +25,7 @@ export default function App() {
     <BrowserRouter>
       <Nav />
       <Routes>
-        <Route path="/" element={<InAction />} />
+        <Route path="/" element={<Wiki />} />
         <Route path="/in-action" element={<InAction />} />
         <Route path="/architecture" element={<ArchitectureDeepDive />} />
         <Route path="/5th-corner" element={<FifthCorner />} />
