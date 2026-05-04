@@ -32,6 +32,7 @@ import StraightEdge from './edges/StraightEdge'
 import CurvedEdge from './edges/CurvedEdge'
 import DiagramToolbar, { computeEdgeType } from './DiagramToolbar'
 import { useDiagramPersistence } from '../hooks/useDiagramPersistence'
+import overviewLayoutFallback from '../data/overviewLayout.json'
 import { useElkLayout } from '../hooks/useElkLayout'
 import { useUndoRedo } from '../hooks/useUndoRedo'
 import { alignNodes, type AlignType } from '../utils/nodeAlignment'
@@ -213,7 +214,10 @@ export default function FamOverviewDiagram({
   onAuthorSelectionChange,
 }: FamOverviewDiagramProps) {
   const { isLocked, toggleLock, savedPositions, savedEdges, savedUserNodes, save, reset, showSaved, resetCount } =
-    useDiagramPersistence('fam-overview-diagram-positions')
+    useDiagramPersistence('fam-overview-diagram-positions', {
+      fallback: overviewLayoutFallback as never,
+      fileApiPath: '/api/overview-layout',
+    })
 
   const { runLayout, isLayouting } = useElkLayout()
   const [defaultRouting, setDefaultRouting] = useState('smoothstep')
@@ -691,7 +695,7 @@ export default function FamOverviewDiagram({
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', background: 'var(--bg-deep)', overflow: 'hidden' }} className={[!isLocked ? 'diagram-edit-mode' : '', authorMode ? 'diagram-author-mode' : ''].filter(Boolean).join(' ')}>
-      {!authorMode && !readOnly && (
+      {!authorMode && !readOnly && import.meta.env.VITE_AUTHOR_MODE_ENABLED === 'true' && (
         <DiagramToolbar
           isLocked={isLocked}
           onToggleLock={toggleLock}

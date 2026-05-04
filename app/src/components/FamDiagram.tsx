@@ -526,7 +526,7 @@ export default function FamDiagram({
 
   return (
     <div className={`diagram-stage${!isLocked ? ' diagram-edit-mode' : ''}`}>
-      <DiagramToolbar
+      {import.meta.env.VITE_AUTHOR_MODE_ENABLED === 'true' && <DiagramToolbar
         isLocked={isLocked}
         onToggleLock={() => setIsLocked(v => !v)}
         onSave={handleSave}
@@ -578,7 +578,7 @@ export default function FamDiagram({
             onDelete={deleteVersion}
           />
         ) : undefined}
-      />
+      />}
       <ReactFlow
         nodes={updatedNodes}
         edges={updatedEdges}

@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 
+const DEV = import.meta.env.DEV
+
 type SavedLayout = Record<string, { x: number; y: number; width?: number; height?: number }>
 
 // Minimal node definition saved for user-created nodes (not in BASE_NODES)
@@ -11,6 +13,19 @@ interface SavedUserNode {
   data: Record<string, unknown>
   style?: Record<string, unknown>
   zIndex?: number
+}
+
+export interface PersistedDiagramData {
+  positions: SavedLayout
+  edges: Edge[] | null
+  userNodes: SavedUserNode[]
+}
+
+interface PersistenceOptions {
+  /** Bundled JSON imported statically — used as fallback when localStorage is empty in production. */
+  fallback?: PersistedDiagramData
+  /** Dev-server API path (e.g. '/api/overview-layout'). When provided, saves are also written to disk in DEV mode. */
+  fileApiPath?: string
 }
 
 interface UseDiagramPersistenceReturn {
@@ -52,13 +67,47 @@ function loadUserNodes(key: string): SavedUserNode[] {
   }
 }
 
-export function useDiagramPersistence(storageKey: string): UseDiagramPersistenceReturn {
+export function useDiagramPersistence(storageKey: string, options?: PersistenceOptions): UseDiagramPersistenceReturn {
+  const { fallback, fileApiPath } = options ?? {}
+
   const [isLocked, setIsLocked] = useState(true)
   const [showSaved, setShowSaved] = useState(false)
   const [resetCount, setResetCount] = useState(0)
-  const [savedPositions, setSavedPositions] = useState<SavedLayout>(() => loadPositions(storageKey))
-  const [savedEdges, setSavedEdges] = useState<Edge[] | null>(() => loadEdges(storageKey))
-  const [savedUserNodes, setSavedUserNodes] = useState<SavedUserNode[]>(() => loadUserNodes(storageKey))
+
+  const [savedPositions, setSavedPositions] = useState<SavedLayout>(() => {
+    const local = loadPositions(storageKey)
+    if (Object.keys(local).length > 0) return local
+    return fallback?.positions ?? {}
+  })
+  const [savedEdges, setSavedEdges] = useState<Edge[] | null>(() => {
+    const local = loadEdges(storageKey)
+    if (local !== null) return local
+    return fallback?.edges ?? null
+  })
+  const [savedUserNodes, setSavedUserNodes] = useState<SavedUserNode[]>(() => {
+    const local = loadUserNodes(storageKey)
+    if (local.length > 0) return local
+    return fallback?.userNodes ?? []
+  })
+
+  // In DEV mode, sync the latest saved state from the file (written by the dev server)
+  // so the author always starts from the committed layout, not a stale localStorage snapshot.
+  useEffect(() => {
+    if (!DEV || !fileApiPath) return
+    fetch(`http://localhost:3001${fileApiPath}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((data: PersistedDiagramData | null) => {
+        if (!data) return
+        setSavedPositions(data.positions ?? {})
+        setSavedEdges(data.edges ?? null)
+        setSavedUserNodes(data.userNodes ?? [])
+        try { localStorage.setItem(storageKey, JSON.stringify(data.positions ?? {})) } catch { /* ignore */ }
+        try { localStorage.setItem(`${storageKey}-edges`, JSON.stringify(data.edges)) } catch { /* ignore */ }
+        try { localStorage.setItem(`${storageKey}-user-nodes`, JSON.stringify(data.userNodes ?? [])) } catch { /* ignore */ }
+      })
+      .catch(() => { /* dev server not running — fall back to localStorage/bundled data */ })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const toggleLock = useCallback(() => setIsLocked(v => !v), [])
 
@@ -94,8 +143,18 @@ export function useDiagramPersistence(storageKey: string): UseDiagramPersistence
     try { localStorage.setItem(`${storageKey}-user-nodes`, JSON.stringify(userNodes)) } catch { /* ignore */ }
     setSavedUserNodes(userNodes)
 
+    // In DEV mode, also persist to disk so the layout gets committed and deployed
+    if (DEV && fileApiPath) {
+      const payload: PersistedDiagramData = { positions, edges, userNodes }
+      fetch(`http://localhost:3001${fileApiPath}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => { /* dev server not running */ })
+    }
+
     setShowSaved(true)
-  }, [storageKey])
+  }, [storageKey, fileApiPath])
 
   const reset = useCallback(() => {
     // Only resets the current view; save in localStorage is preserved.
