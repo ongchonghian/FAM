@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import bundledOverrides from '../data/scenarios-overrides.json'
 
 const DEV = import.meta.env.DEV
 const API = 'http://localhost:3001/api/scenarios-overrides'
@@ -56,7 +57,7 @@ function emptyStep(active: string[], flows: string[]): StepState {
 
 async function fetchOverrides(): Promise<OverridesMap | null> {
   const local = loadFromStorage()
-  if (!DEV) return local
+  if (!DEV) return local ?? (bundledOverrides as OverridesMap)
   try {
     const r = await fetch(API)
     if (!r.ok) return local
