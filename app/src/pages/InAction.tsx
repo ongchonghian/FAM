@@ -338,20 +338,22 @@ export default function InAction() {
               </button>
             </>
           )}
-          <button
-            className={`btn${authorMode ? ' primary' : ''}`}
-            style={{ fontSize: 11, padding: '4px 10px' }}
-            onClick={() => {
-              setDiagramDraft(null)
-              setPendingNav(null)
-              setAuthorMode(m => !m)
-              setSelectedNodeIds([])
-              setSelectedEdgeIds([])
-            }}
-            title="Toggle author mode (dev only)"
-          >
-            ✎ {authorMode ? 'Exit Author' : 'Author'}
-          </button>
+          {import.meta.env.VITE_AUTHOR_MODE_ENABLED === 'true' && (
+            <button
+              className={`btn${authorMode ? ' primary' : ''}`}
+              style={{ fontSize: 11, padding: '4px 10px' }}
+              onClick={() => {
+                setDiagramDraft(null)
+                setPendingNav(null)
+                setAuthorMode(m => !m)
+                setSelectedNodeIds([])
+                setSelectedEdgeIds([])
+              }}
+              title="Toggle author mode (dev only)"
+            >
+              ✎ {authorMode ? 'Exit Author' : 'Author'}
+            </button>
+          )}
         </div>
       )}
 
