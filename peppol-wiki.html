@@ -994,34 +994,37 @@ kbd {
 // =====================================================================
 // PAGES DATA
 // =====================================================================
+// Iframes point to the migrated React app (Vite dev server on port 5173).
+// `?embed=1` tells the React app to hide its top nav bar when shown inside this wiki.
+const REACT_APP_BASE = 'http://localhost:5173';
 const PAGES = [
   {
     id: 'overview',
     title: 'Executive Infographic',
     tag: 'OVERVIEW',
     tagClass: 'tag-overview',
-    file: 'peppol-5th-corner-infographic.html'
+    file: REACT_APP_BASE + '/5th-corner?embed=1'
   },
   {
     id: 'architecture',
     title: 'Architecture Deep-Dive',
     tag: 'DEEP DIVE',
     tagClass: 'tag-arch',
-    file: 'peppol-mesh-architecture-deep-dive.html'
+    file: REACT_APP_BASE + '/architecture?embed=1'
   },
   {
     id: 'action',
     title: 'Mesh in Action',
     tag: 'IN ACTION',
     tagClass: 'tag-action',
-    file: 'peppol-mesh-in-action.html'
+    file: REACT_APP_BASE + '/in-action?embed=1'
   },
   {
     id: 'dictionary',
     title: 'Data Dictionary',
     tag: 'REFERENCE',
     tagClass: 'tag-dict',
-    file: 'peppol-data-dictionary.html'
+    file: REACT_APP_BASE + '/data-dictionary?embed=1'
   }
 ];
 
