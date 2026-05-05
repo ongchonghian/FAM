@@ -1,1 +1,468 @@
-{ "positions": {}, "edges": null, "userNodes": [] }
+{
+  "positions": {
+    "band-peppol": {
+      "x": 20,
+      "y": 40,
+      "width": 870,
+      "height": 210
+    },
+    "band-dex": {
+      "x": 20,
+      "y": 251,
+      "width": 1120,
+      "height": 574
+    },
+    "sml": {
+      "x": 100,
+      "y": 65,
+      "width": 120,
+      "height": 34
+    },
+    "smp": {
+      "x": 257.5,
+      "y": 65,
+      "width": 120,
+      "height": 34
+    },
+    "asr": {
+      "x": 440,
+      "y": 65,
+      "width": 120,
+      "height": 34
+    },
+    "c1": {
+      "x": 100,
+      "y": 150,
+      "width": 70,
+      "height": 70
+    },
+    "c2": {
+      "x": 255,
+      "y": 158,
+      "width": 125,
+      "height": 54
+    },
+    "c3": {
+      "x": 512.5,
+      "y": 158,
+      "width": 125,
+      "height": 54
+    },
+    "c4": {
+      "x": 710,
+      "y": 150,
+      "width": 70,
+      "height": 70
+    },
+    "ir": {
+      "x": 960,
+      "y": 155,
+      "width": 130,
+      "height": 70
+    },
+    "pitstop-ir": {
+      "x": 947.6843253052252,
+      "y": 321.9370104476638,
+      "width": 155,
+      "height": 36
+    },
+    "ase-c2": {
+      "x": 252.5,
+      "y": 372,
+      "width": 130,
+      "height": 68
+    },
+    "ase-c3": {
+      "x": 510,
+      "y": 372,
+      "width": 130,
+      "height": 68
+    },
+    "ase-ir": {
+      "x": 960,
+      "y": 372,
+      "width": 130,
+      "height": 68
+    },
+    "pitstop-banks": {
+      "x": 50,
+      "y": 510,
+      "width": 155,
+      "height": 36
+    },
+    "pitstop-mas": {
+      "x": 245,
+      "y": 510,
+      "width": 155,
+      "height": 36
+    },
+    "pitstop-enterprises": {
+      "x": 440,
+      "y": 510,
+      "width": 155,
+      "height": 36
+    },
+    "pitstop-owner": {
+      "x": 635,
+      "y": 510,
+      "width": 155,
+      "height": 36
+    },
+    "broker": {
+      "x": 773.0693685235278,
+      "y": 600.1474602441803,
+      "width": 230,
+      "height": 80
+    },
+    "admin": {
+      "x": 310,
+      "y": 740,
+      "width": 230,
+      "height": 54
+    }
+  },
+  "edges": [
+    {
+      "id": "doc-c1-c2",
+      "source": "c1",
+      "target": "c2",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "label": "AS4",
+      "labelStyle": {
+        "fill": "#6a7a9a",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#0f1626"
+      },
+      "style": {
+        "stroke": "#6a7a9a",
+        "strokeWidth": 1.6
+      },
+      "data": {}
+    },
+    {
+      "id": "doc-c2-c3",
+      "source": "c2",
+      "target": "c3",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "label": "AS4 · PINT-SG",
+      "labelStyle": {
+        "fill": "#6a7a9a",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#0f1626"
+      },
+      "style": {
+        "stroke": "#6a7a9a",
+        "strokeWidth": 1.6
+      },
+      "data": {}
+    },
+    {
+      "id": "doc-c3-c4",
+      "source": "c3",
+      "target": "c4",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "label": "AS4",
+      "labelStyle": {
+        "fill": "#6a7a9a",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#0f1626"
+      },
+      "style": {
+        "stroke": "#6a7a9a",
+        "strokeWidth": 1.6
+      },
+      "data": {}
+    },
+    {
+      "id": "c2-ir",
+      "source": "c2",
+      "target": "ir",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "data": {},
+      "animated": true,
+      "label": "parallel fwd",
+      "labelStyle": {
+        "fill": "#38bdf8",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#0f1626"
+      },
+      "style": {
+        "stroke": "#38bdf8",
+        "strokeWidth": 1.8,
+        "strokeDasharray": "5 4"
+      }
+    },
+    {
+      "id": "ir-pitstop-ir",
+      "source": "ir",
+      "target": "pitstop-ir",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "style": {
+        "stroke": "#38bdf8",
+        "strokeWidth": 1.2,
+        "strokeDasharray": "5 4"
+      },
+      "data": {}
+    },
+    {
+      "id": "c2-ase-c2",
+      "source": "c2",
+      "target": "ase-c2",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#39ff84",
+        "strokeWidth": 1.6,
+        "strokeDasharray": "5 4"
+      },
+      "data": {}
+    },
+    {
+      "id": "c3-ase-c3",
+      "source": "c3",
+      "target": "ase-c3",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#39ff84",
+        "strokeWidth": 1.6,
+        "strokeDasharray": "5 4"
+      },
+      "data": {}
+    },
+    {
+      "id": "ase-mesh",
+      "source": "ase-c2",
+      "target": "ase-c3",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true,
+      "label": "PSI · MPC · FL",
+      "labelStyle": {
+        "fill": "#39ff84",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#0f1626"
+      },
+      "style": {
+        "stroke": "#39ff84",
+        "strokeWidth": 2,
+        "strokeDasharray": "5 4"
+      },
+      "data": {}
+    },
+    {
+      "id": "ase-c3-ase-ir",
+      "source": "ase-c3",
+      "target": "ase-ir",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#39ff84",
+        "strokeWidth": 2,
+        "strokeDasharray": "5 4"
+      },
+      "data": {}
+    },
+    {
+      "id": "ase-c2-broker",
+      "source": "ase-c2",
+      "target": "broker",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "data": {},
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 1.6,
+        "strokeDasharray": "5 4"
+      }
+    },
+    {
+      "id": "ase-c3-broker",
+      "source": "ase-c3",
+      "target": "broker",
+      "sourceHandle": "right",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "data": {},
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 1.6,
+        "strokeDasharray": "5 4"
+      }
+    },
+    {
+      "id": "pitstop-banks-broker",
+      "source": "pitstop-banks",
+      "target": "broker",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "5 4"
+      },
+      "data": {}
+    },
+    {
+      "id": "smp-c2",
+      "source": "smp",
+      "target": "c2",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "style": {
+        "stroke": "#3d4a73",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "2 3"
+      },
+      "data": {}
+    },
+    {
+      "id": "smp-c3",
+      "source": "smp",
+      "target": "c3",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "style": {
+        "stroke": "#3d4a73",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "2 3"
+      },
+      "data": {}
+    },
+    {
+      "id": "admin-broker",
+      "source": "broker",
+      "target": "admin",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "label": "manifest fetch",
+      "labelStyle": {
+        "fill": "#5a6584",
+        "fontSize": 10,
+        "fontStyle": "italic"
+      },
+      "labelBgStyle": {
+        "fill": "#0f1626"
+      },
+      "style": {
+        "stroke": "#3d4a73",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "2 3"
+      },
+      "data": {}
+    },
+    {
+      "source": "asr",
+      "target": "broker",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "data": {},
+      "style": {
+        "stroke": "#39ff84",
+        "strokeWidth": 0.8,
+        "strokeDasharray": "2 3"
+      },
+      "id": "asr-broker",
+      "selected": true
+    },
+    {
+      "source": "pitstop-owner",
+      "target": "broker",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "5 4"
+      },
+      "data": {},
+      "selected": false,
+      "id": "pitstop-owner-broker"
+    },
+    {
+      "source": "pitstop-enterprises",
+      "target": "broker",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "5 4"
+      },
+      "data": {},
+      "id": "pitstop-enterprises-broker"
+    },
+    {
+      "source": "ase-ir",
+      "target": "broker",
+      "sourceHandle": "left",
+      "targetHandle": "top",
+      "type": "smoothstep",
+      "data": {},
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 1.6,
+        "strokeDasharray": "5 4"
+      },
+      "selected": false,
+      "id": "ase-ir-broker"
+    },
+    {
+      "source": "pitstop-mas",
+      "target": "broker",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true,
+      "style": {
+        "stroke": "#fbbf24",
+        "strokeWidth": 0.9,
+        "strokeDasharray": "5 4"
+      },
+      "data": {},
+      "id": "pitstop-mas-broker"
+    }
+  ],
+  "userNodes": []
+}
