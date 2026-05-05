@@ -2,3 +2,6 @@
 node_modules
 *.local
 .claude/settings.local.json
+
+# Local Netlify folder
+.netlify
