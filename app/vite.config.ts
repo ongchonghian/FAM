@@ -1,7 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'root-to-shell',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url === '/') req.url = '/peppol-wiki.html'
+          next()
+        })
+      },
+    },
+  ],
 })
