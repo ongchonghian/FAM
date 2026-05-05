@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import bundledOverrides from '../data/scenarios-overrides.json'
 
 const DEV = import.meta.env.DEV
-const API = 'http://localhost:3001/api/scenarios-overrides'
+const API = '/api/scenarios-overrides'
 const STORAGE_KEY = 'fam-step-overrides'
 
 function loadFromStorage(): OverridesMap | null {

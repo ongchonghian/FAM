@@ -3,7 +3,7 @@ import type { Node, Edge } from '@xyflow/react'
 import fallbackData from '../data/famDiagram.json'
 
 const DEV = import.meta.env.DEV
-const API = 'http://localhost:3001/api/diagram'
+const API = '/api/diagram'
 
 export interface DiagramData { nodes: Node[]; edges: Edge[] }
 

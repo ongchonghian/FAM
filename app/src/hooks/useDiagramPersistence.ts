@@ -94,7 +94,7 @@ export function useDiagramPersistence(storageKey: string, options?: PersistenceO
   // so the author always starts from the committed layout, not a stale localStorage snapshot.
   useEffect(() => {
     if (!DEV || !fileApiPath) return
-    fetch(`http://localhost:3001${fileApiPath}`)
+    fetch(fileApiPath)
       .then(r => r.ok ? r.json() : null)
       .then((data: PersistedDiagramData | null) => {
         if (!data) return
@@ -146,7 +146,7 @@ export function useDiagramPersistence(storageKey: string, options?: PersistenceO
     // In DEV mode, also persist to disk so the layout gets committed and deployed
     if (DEV && fileApiPath) {
       const payload: PersistedDiagramData = { positions, edges, userNodes }
-      fetch(`http://localhost:3001${fileApiPath}`, {
+      fetch(fileApiPath, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
