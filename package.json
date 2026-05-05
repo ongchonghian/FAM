@@ -4,6 +4,7 @@
   "description": "Federated Analytics Mesh — Privacy-Preserving 5th Corner for PEPPOL / Singapore InvoiceNow",
   "scripts": {
     "start": "npx serve . -p 3000 --no-clipboard",
-    "dev": "npx serve . -p 3000"
+    "dev": "npx serve . -p 3000",
+    "build": "cd app && npm install && npm run build"
   }
 }
