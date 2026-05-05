@@ -4,6 +4,11 @@
   publish = "dist"
 
 [[redirects]]
+  from   = "/"
+  to     = "/peppol-wiki.html"
+  status = 200
+
+[[redirects]]
   from   = "/peppol-wiki.html"
   to     = "/peppol-wiki.html"
   status = 200
